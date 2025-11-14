@@ -1,3 +1,3 @@
 export const config = {
-    matcher: "/:path*.lua"
+  matcher: ["/:path*/*.lua", "/:path*.lua"]
 };

@@ -1,11 +1,13 @@
 {
-  "routes": [
+  "headers": [
     {
-      "src": "/(.*)\\.lua",
-      "headers": {
-        "Content-Type": "text/plain"
-      },
-      "middleware": true
+      "source": "/(.*)\\.lua",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain"
+        }
+      ]
     }
   ]
 }

@@ -17,23 +17,36 @@ Tabs.Custom:Section({
 
 _G.FakeChatEnabled = false
 _G.FakeChatUser = LocalPlayer.Name
+_G.FakeChatLooping = false
 
--- Toggle FakeChat (also TP to user when enabled)
+-- Function to noclip entire character
+local function NoclipCharacter(character)
+    if character then
+        for _, part in pairs(character:GetDescendants()) do
+            if part:IsA("BasePart") and part.CanCollide ~= false then
+                part.CanCollide = false
+            end
+        end
+    end
+end
+
+-- Toggle FakeChat (also TP to user and follow while enabled)
 Tabs.Custom:Toggle({
     Title = "Toggle FakeChat",
-    Desc = "Enable fake chat system + teleport to FakeChat User",
+    Desc = "Teleport to person, and speak for them. (Requires Invisibility)",
     Default = false,
     Callback = function(value)
         _G.FakeChatEnabled = value
 
         if value then
-            -- REQUIREMENTS: Need invisibility OR disable TP check
+            -- REQUIREMENTS: BOTH invisibility AND disable TP check must be true
             if not (_G.Invisibility == true or (_G.Functions and _G.Functions:IsGodModeEnabled())) then
                 WindUI:Notify({
                     Title = "TP Error",
-                    Content = "❌ Need Invisibility OR Disable TP Check!",
+                    Content = "❌ You must have Invisibility AND Disable TP Check enabled!",
                     Duration = 4
                 })
+                _G.FakeChatEnabled = false
                 return
             end
 
@@ -44,6 +57,7 @@ Tabs.Custom:Toggle({
                     Content = "❌ No name set in FakeChat User!",
                     Duration = 3
                 })
+                _G.FakeChatEnabled = false
                 return
             end
 
@@ -54,6 +68,7 @@ Tabs.Custom:Toggle({
                     Content = "❌ Target player not found!",
                     Duration = 3
                 })
+                _G.FakeChatEnabled = false
                 return
             end
 
@@ -64,6 +79,7 @@ Tabs.Custom:Toggle({
                     Content = "❌ Target has no HumanoidRootPart!",
                     Duration = 3
                 })
+                _G.FakeChatEnabled = false
                 return
             end
 
@@ -75,15 +91,34 @@ Tabs.Custom:Toggle({
                     Content = "❌ Your body isn't loaded!",
                     Duration = 3
                 })
+                _G.FakeChatEnabled = false
                 return
             end
 
-            -- PERFECT ALIGNMENT TELEPORT
-            root.CFrame = targetRoot.CFrame
+            -- Start looping follow & noclip
+            if not _G.FakeChatLooping then
+                _G.FakeChatLooping = true
+                task.spawn(function()
+                    while _G.FakeChatEnabled do
+                        local char = LocalPlayer.Character
+                        local root = char and char:FindFirstChild("HumanoidRootPart")
+                        local target = Players:FindFirstChild(_G.FakeChatUser)
+                        local targetRoot = target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
+                        if char and root and targetRoot then
+                            -- Perfect inside body
+                            root.CFrame = targetRoot.CFrame
+                            -- Full-body noclip
+                            NoclipCharacter(char)
+                        end
+                        task.wait(0.03) -- smooth follow
+                    end
+                    _G.FakeChatLooping = false
+                end)
+            end
 
             WindUI:Notify({
                 Title = "TP Success",
-                Content = "✅ You are now inside " .. target.Name,
+                Content = "✅ You are now following " .. target.Name .. " with full noclip",
                 Duration = 3
             })
         end
@@ -93,7 +128,7 @@ Tabs.Custom:Toggle({
 -- FakeChat Username input
 Tabs.Custom:Input({
     Title = "FakeChat User",
-    Desc = "Name to appear in chat + TP target",
+    Desc = "User to FakeChat",
     Placeholder = LocalPlayer.Name,
     Callback = function(text)
         if text and text ~= "" then

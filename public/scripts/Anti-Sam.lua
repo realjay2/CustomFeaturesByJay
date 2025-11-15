@@ -49,7 +49,7 @@ end
 
 Tabs.Custom:Toggle({
     Title = "Anti Sam Jumpscare",
-    Desc = "Reverts any Sam jumpscare changes to images, decals, text, and particles",
+    Desc = "Prevents Sam Jumpscare from staying.",
     Default = false,
     Callback = function(Value)
         if Value then

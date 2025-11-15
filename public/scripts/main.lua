@@ -23,5 +23,33 @@ Tabs.Custom = Window:Tab({
     Icon = "folder-lock"
 })
 
+Tabs.Custom:Section({
+    Title = "Vehicle Features"
+})
+
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/car-fly.lua"))()
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/horn-boost.lua"))()
+
+Tabs.Custom:Section({
+    Title = "Local Features"
+})
+
+
+Tabs.Custom:Section({
+    Title = "Visual Features"
+})
+
+
+Tabs.Custom:Section({
+    Title = "Automated Features"
+})
+
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/prc-check.lua"))()
+
+Tabs.Custom:Section({
+    Title = "Teleport Features"
+})
+
+
 print("Loaded | Custom Features")
 print("Version: " .. version)

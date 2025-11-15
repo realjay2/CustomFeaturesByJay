@@ -17,6 +17,11 @@ end
 local AntiPRC_ToggleActive = false
 local SeenPRCMods = {}
 
+Tabs.Custom:Section({
+	Title = "Anti PRC",
+	TextSize = 16,
+})
+
 -- Dropdown for action selection
 local ActionSetting = Tabs.Custom:Dropdown({
     Title = "Anti PRC Action",

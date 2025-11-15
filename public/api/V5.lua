@@ -3,7 +3,6 @@ local LocalPlayer = Players.LocalPlayer
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
-local EnviromentRemote = Actions:WaitForChild("Environmental", 9e9)
 local FE = game:GetService("ReplicatedStorage"):WaitForChild("FE")
 local Chat = FE:WaitForChild("Chat", 9e9)
 

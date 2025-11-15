@@ -8,7 +8,7 @@ local Connections  = _G.Connections or {}
 
 local HornBoostEnabled = false
 local HornBoostPower   = 50
-local HornBoostKey     = Enum.KeyCode.E
+local HornBoostKey     = Enum.KeyCode.H
 
 -- Utility function for yellow particle burst
 local function YellowBurst(vehicle)

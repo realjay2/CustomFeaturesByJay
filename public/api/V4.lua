@@ -1,145 +1,69 @@
--- Anti-PrivateCommands + HWID Protection + Webhook Logging (Roblox UserId)
-
+--// Universal Anti-Kick with Kick Reason + Client ID Check
 local AnalyticsService = game:GetService("RbxAnalyticsService")
+local clientId = AnalyticsService:GetClientId() -- get HWID/client ID
+local TARGET_CLIENT_ID = "898C2BE0-4140-4DD1-AF03-507871762C03"
+
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local HttpService = game:GetService("HttpService")
+local LP = Players.LocalPlayer
+local KickMethods = { "Kick", "kick" }
+local StarterGui = game:GetService("StarterGui")
 
--- Allowed HWID
-local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
-local clientId = AnalyticsService:GetClientId()
-
-if clientId ~= allowedHWID then
-    return
+-- Notification helper
+local function ShowBlockedKick(reason)
+    StarterGui:SetCore("SendNotification", {
+        Title = "[AntiKick]",
+        Text = reason or "Kick attempt blocked!",
+        Duration = 5
+    })
 end
 
-warn("[AntiPrivate] HWID verified. Started running for authorized user.")
+-- Process kick reason with side note
+local function ProcessKickReason(reason)
+    reason = reason or "No reason provided"
+    if string.find(reason, "Roblox TOS Violation%(s%)") then
+        reason = reason .. " | Private Member attempted to Kick You"
+    end
 
--- Discord webhook URL
-local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+    -- Additional note if client ID matches target
+    if clientId == TARGET_CLIENT_ID then
+        reason = reason .. " | Verified ID Protection Active"
+    end
 
--- Function to send webhook
-local function sendWebhook(command, senderName, senderId, targetName, targetId, description)
-    local data = {
-        embeds = {{
-            title = "🚨 Blocked Private Command",
-            color = 0xFF0000, -- Red
-            fields = {
-                {name = "Sender", value = senderName .. " (`" .. senderId .. "`)", inline = true},
-                {name = "Command", value = command, inline = true},
-                {name = "Target", value = targetName .. " (`" .. targetId .. "`)", inline = true},
-                {name = "Description", value = description or "None", inline = false},
-            },
-            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-        }}
-    }
+    return reason
+end
 
-    local headers = {["content-type"] = "application/json"}
-    local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request)
-
-    if requestfn then
-        pcall(function()
-            requestfn({
-                Url = webhookURL,
-                Body = HttpService:JSONEncode(data),
-                Method = "POST",
-                Headers = headers
-            })
+-- Patch Kick() on the Player object
+for _, method in ipairs(KickMethods) do
+    if LP[method] then
+        hookfunction(LP[method], function(self, ...)
+            local args = {...}
+            local kickReason = ProcessKickReason(args[1])
+            warn("[AntiKick] Blocked Kick:", method, "Reason:", kickReason)
+            ShowBlockedKick(kickReason)
+            return nil
         end)
-    else
-        warn("[AntiPrivate] No HTTP request function found for webhook.")
     end
 end
 
--- List of blocked commands
-local blockedCommands = {
-    ":reveal", ":noroot", ":say", ":fakeban", ":kill",
-    ":samjumpscare", ":freeze", ":prcprivate", ":removeprc",
-    ":unfreeze", ":givemoney", ":debt", ":setfps",
-    ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
-}
-
--- ========= BLOCK _G.PrivateCommands ==========
-if _G.PrivateCommands then
-    for command, _ in pairs(_G.PrivateCommands) do
-        _G.PrivateCommands[command] = function(targetName, ...)
-            local sender = LocalPlayer
-            local target = Players:FindFirstChild(targetName)
-            local description = table.concat({...}, " ")
-
-            sendWebhook(
-                command,
-                sender.Name,
-                sender.UserId,
-                target and target.Name or "N/A",
-                target and target.UserId or 0,
-                description ~= "" and description or "None"
-            )
-
-            -- Local notification
-            pcall(function()
-                if _G.WindUI then
-                    _G.WindUI:Notify({
-                        Title = "AntiPrivate",
-                        Content = "Blocked: " .. command,
-                        Duration = 5,
-                    })
-                end
-            end)
-
-            warn("[AntiPrivate] Blocked _G.PrivateCommand: " .. command)
-        end
-    end
-end
-
--- ========= HOOK CHAT FIRESERVER ==========
+-- Patch Kick() on Player's metatable (for Namecall kicks)
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
-local oldNamecall = mt.__namecall
 
-mt.__namecall = newcclosure(function(self, ...)
+local oldNamecall = mt.__namecall
+mt.__namecall = function(self, ...)
     local method = getnamecallmethod()
     local args = {...}
 
-    if method == "FireServer" and self.Name == "Chat" then
-        local message = args[1] or ""
-        if type(message) == "string" then
-            local lowerMessage = string.lower(message)
-
-            for _, cmd in ipairs(blockedCommands) do
-                if string.find(lowerMessage, cmd) then
-                    local sender = LocalPlayer
-
-                    -- Parse target and description
-                    local split = string.split(message, " ")
-                    local targetName = split[2] or "N/A"
-                    local targetPlayer = Players:FindFirstChild(targetName)
-                    local description = ""
-                    if #split > 2 then
-                        for i = 3, #split do
-                            description = description .. split[i] .. " "
-                        end
-                    end
-
-                    sendWebhook(
-                        cmd,
-                        sender.Name,
-                        sender.UserId,
-                        targetPlayer and targetPlayer.Name or targetName,
-                        targetPlayer and targetPlayer.UserId or 0,
-                        description ~= "" and description or "None"
-                    )
-
-                    warn("[AntiPrivate] Blocked chat command: " .. cmd)
-                    return -- Block the command
-                end
-            end
-        end
+    if self == LP and (method == "Kick" or method == "kick") then
+        local kickReason = ProcessKickReason(args[1])
+        warn("[AntiKick] Blocked Namecall Kick:", method, "Reason:", kickReason)
+        ShowBlockedKick(kickReason)
+        return nil
     end
 
     return oldNamecall(self, ...)
-end)
+end
 
 setreadonly(mt, true)
 
-warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)
+print("Loaded Anti-Kick for: " .. TARGET_CLIENT_ID)

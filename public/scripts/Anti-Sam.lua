@@ -61,9 +61,9 @@ Tabs.Custom:Toggle({
                     task.wait(0.5)
                 end
             end)
-            _G.WindUI:Notify("Anti Sam Jumpscare Enabled ✅")
+            _G.WindUI:Notify("Anti Sam Jumpscare Enabled")
         else
-            _G.WindUI:Notify("Anti Sam Jumpscare Disabled ❌")
+            _G.WindUI:Notify("Anti Sam Jumpscare Disabled")
         end
     end
 })

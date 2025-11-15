@@ -12,7 +12,7 @@ Tabs.Custom:Section({
 
 Tabs.Custom:Toggle({
     Title = "Auto Arrest",
-    Desc = "Auto Arrest V2 Soon",
+    Desc = "Auto Arrest V2 (Soon)",
     Default = false,
     Locked = True
     Callback = function(value)

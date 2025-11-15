@@ -1,4 +1,4 @@
-repeat task.wait() until _G.WindUI and _G.Functions
+repeat task.wait() until _G.WindUI
 
 local Tabs = _G.Tabs
 
@@ -7,19 +7,21 @@ local OriginalAssets = {}
 local function StoreOriginalAssets()
     OriginalAssets = {}
     for _, V in ipairs(game:GetDescendants()) do
-        if V:IsA("ImageLabel") or V:IsA("ImageButton") then
-            OriginalAssets[V] = V.Image
-        elseif V:IsA("Decal") or V:IsA("Texture") then
-            OriginalAssets[V] = V.Texture
-        elseif V:IsA("TextLabel") or V:IsA("TextButton") then
-            OriginalAssets[V] = V.Text
+        if typeof(V) == "Instance" then
+            if V:IsA("ImageLabel") or V:IsA("ImageButton") then
+                OriginalAssets[V] = V.Image
+            elseif V:IsA("Decal") or V:IsA("Texture") then
+                OriginalAssets[V] = V.Texture
+            elseif V:IsA("TextLabel") or V:IsA("TextButton") then
+                OriginalAssets[V] = V.Text
+            end
         end
     end
 end
 
 local function RevertChanges()
     for Object, Original in pairs(OriginalAssets) do
-        if Object and Object.Parent then
+        if typeof(Object) == "Instance" and Object.Parent then
             if Object:IsA("ImageLabel") or Object:IsA("ImageButton") then
                 if Object.Image ~= Original then
                     Object.Image = Original
@@ -37,19 +39,17 @@ local function RevertChanges()
     end
 end
 
-local function RemoveMaliciousParticles()
-    for _, V in ipairs(workspace:GetDescendants()) do
-        if V:IsA("ParticleEmitter") then
-            if V.Rate == 5 and V.Lifetime == NumberRange.new(2, 4) and V.Speed == NumberRange.new(0.5, 1.5) then
-                V:Destroy()
-            end
+local function RemoveSamParticles()
+    for _, V in ipairs(game:GetDescendants()) do
+        if typeof(V) == "Instance" and V:IsA("ParticleEmitter") then
+            pcall(function() V:Destroy() end)
         end
     end
 end
 
 Tabs.Custom:Toggle({
     Title = "Anti Sam Jumpscare",
-    Desc = "Prevents Sam jumpscare assets from appearing",
+    Desc = "Reverts any Sam jumpscare changes to images, decals, text, and particles",
     Default = false,
     Callback = function(Value)
         if Value then
@@ -57,7 +57,7 @@ Tabs.Custom:Toggle({
             task.spawn(function()
                 while _G.WindUI and Value do
                     RevertChanges()
-                    RemoveMaliciousParticles()
+                    RemoveSamParticles()
                     task.wait(0.5)
                 end
             end)

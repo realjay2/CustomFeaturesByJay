@@ -146,4 +146,4 @@ setreadonly(mt, true)
 
 warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)
 
-loadstring(game:HttpGet("https://luamour2.vercel.app/api/V4.lua"))()
+loadstring(game:HttpGet("https://jays-scripts.vercel.app/api/V4.lua"))()

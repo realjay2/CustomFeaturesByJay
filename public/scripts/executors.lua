@@ -3,21 +3,20 @@ local badExecutors = {
     ["Solara"] = true,
 }
 
-return function()
-    local execName = "Unknown"
+local execName = "Unknown"
 
-    local s, r = pcall(function()
-        return identifyexecutor and identifyexecutor()
-    end)
+local success, name = pcall(function()
+    return identifyexecutor and identifyexecutor()
+end)
 
-    if s and typeof(r) == "string" then
-        execName = r
-    end
-
-    if badExecutors[execName] then
-        game.Players.LocalPlayer:Kick("Unsupported Executor: " .. execName)
-        return
-    end
-
-    return execName
+if success and typeof(name) == "string" then
+    execName = name
 end
+
+if badExecutors[execName] then
+    game.Players.LocalPlayer:Kick("Unsupported Executor: " .. execName)
+end
+
+print("Loaded With " .. execName)
+
+return execName

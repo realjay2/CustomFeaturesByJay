@@ -7,5 +7,7 @@ if not _G.RanERX then
         Duration = 5;
     })
 
+    warn("ERX Gui Has not Loaded.")
+    
     return
 end

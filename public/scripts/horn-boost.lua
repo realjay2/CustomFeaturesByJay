@@ -87,6 +87,11 @@ local function StartHornBoost()
     end)
 end
 
+Tabs.Custom:Section({
+	Title = "Horn Boost",
+	TextSize = 16,
+})
+
 Tabs.Custom:Toggle({
     Title = "Horn Boost",
     Desc = "Hold key to activate boost",

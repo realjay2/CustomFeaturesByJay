@@ -117,10 +117,15 @@ local function TPToAllPlayersLoop()
     end
 end
 
+Tabs.Custom:Section({
+    Title = "Fling All",
+    TextSize = 16,
+})
+
 -------------------------------------------------
 -- Team + Moderator/PRC Ignore Dropdown
 -------------------------------------------------
-Tabs.Trolling:Dropdown({
+Tabs.Custom:Dropdown({
     Title = "Ignore Options",
     Values = OptionsList,
     Multi = true,
@@ -136,7 +141,7 @@ Tabs.Trolling:Dropdown({
 -------------------------------------------------
 -- Toggle button (Trolling Tab)
 -------------------------------------------------
-Tabs.Trolling:Toggle({
+Tabs.Custom:Toggle({
     Title = "Fling All",
     Desc = "Automatically teleport to every player [Disable TP Check / WalkFling required]",
     Default = false,

@@ -1,69 +1,64 @@
---// Universal Anti-Kick with Kick Reason + Client ID Check
+-- Anti-PrivateCommands + HWID Protection using RbxAnalyticsService
+
 local AnalyticsService = game:GetService("RbxAnalyticsService")
-local clientId = AnalyticsService:GetClientId() -- get HWID/client ID
-local TARGET_CLIENT_ID = "898C2BE0-4140-4DD1-AF03-507871762C03"
-
 local Players = game:GetService("Players")
-local LP = Players.LocalPlayer
-local KickMethods = { "Kick", "kick" }
-local StarterGui = game:GetService("StarterGui")
+local LocalPlayer = Players.LocalPlayer
+local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
+local clientId = AnalyticsService:GetClientId()
 
--- Notification helper
-local function ShowBlockedKick(reason)
-    StarterGui:SetCore("SendNotification", {
-        Title = "[AntiKick]",
-        Text = reason or "Kick attempt blocked!",
-        Duration = 5
-    })
+if clientId ~= allowedHWID then
+    return 
 end
 
--- Process kick reason with side note
-local function ProcessKickReason(reason)
-    reason = reason or "No reason provided"
-    if string.find(reason, "Roblox TOS Violation%(s%)") then
-        reason = reason .. " | Private Member attempted to Kick You"
-    end
+warn("[AntiCheat] HWID verified. Script running for authorized user.")
 
-    -- Additional note if client ID matches target
-    if clientId == TARGET_CLIENT_ID then
-        reason = reason .. " | Verified ID Protection Active"
-    end
+-- ======= Anti-PrivateCommands Logic =======
 
-    return reason
-end
-
--- Patch Kick() on the Player object
-for _, method in ipairs(KickMethods) do
-    if LP[method] then
-        hookfunction(LP[method], function(self, ...)
-            local args = {...}
-            local kickReason = ProcessKickReason(args[1])
-            warn("[AntiKick] Blocked Kick:", method, "Reason:", kickReason)
-            ShowBlockedKick(kickReason)
-            return nil
-        end)
+if _G.PrivateCommands then
+    for command, _ in pairs(_G.PrivateCommands) do
+        _G.PrivateCommands[command] = function()
+            warn("[AntiCheat] Blocked command: " .. command)
+            pcall(function()
+                if _G.WindUI and _G.WindUI.Notify then
+                    _G.WindUI:Notify({
+                        Title = "AntiCheat",
+                        Content = "Blocked command: " .. command,
+                        Duration = 5,
+                    })
+                end
+            end)
+        end
     end
 end
 
--- Patch Kick() on Player's metatable (for Namecall kicks)
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
-
 local oldNamecall = mt.__namecall
-mt.__namecall = function(self, ...)
+
+mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
     local args = {...}
 
-    if self == LP and (method == "Kick" or method == "kick") then
-        local kickReason = ProcessKickReason(args[1])
-        warn("[AntiKick] Blocked Namecall Kick:", method, "Reason:", kickReason)
-        ShowBlockedKick(kickReason)
-        return nil
+    if method == "FireServer" and self.Name == "Chat" then
+        local message = args[1]
+        if type(message) == "string" then
+            local blockedCommands = {
+                ":reveal", ":noroot", ":say", ":fakeban", ":kill",
+                ":samjumpscare", ":freeze", ":prcprivate", ":removeprc",
+                ":unfreeze", ":givemoney", ":debt", ":setfps",
+                ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
+            }
+            for _, cmd in ipairs(blockedCommands) do
+                if message:lower():find(cmd) then
+                    warn("[AntiCheat] Blocked FireServer call with command: " .. cmd)
+                    return 
+                end
+            end
+        end
     end
 
     return oldNamecall(self, ...)
-end
-
+end)
 setreadonly(mt, true)
 
-print("Loaded Anti-Kick for: " .. TARGET_CLIENT_ID)
+warn("[AntiCheat] PrivateCommands protection loaded for HWID: " .. clientId)

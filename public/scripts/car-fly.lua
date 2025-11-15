@@ -6,6 +6,11 @@ local Tabs         = _G.Tabs
 local Functions    = _G.Functions
 local Connections  = _G.Connections
 
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UIS = game:GetService("UserInputService")
+local Player = Players.LocalPlayer
+
 getgenv()._CarFlySpeed = 50 
 
 Tabs.Custom:Section({

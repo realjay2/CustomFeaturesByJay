@@ -14,7 +14,7 @@ Tabs.Custom:Toggle({
     Title = "Auto Drive",
     Desc = "Auto Drive To Waypoint (Soon)",
     Default = false,
-    Locked = True
+    Locked = True,
     Callback = function(value)
     end
 })

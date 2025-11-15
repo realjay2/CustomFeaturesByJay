@@ -1,5 +1,3 @@
-script_key = "YglKravMHm";
-
 local required_key = "YglKravMHm"
 
 if typeof(script_key) ~= "string" or script_key ~= required_key then

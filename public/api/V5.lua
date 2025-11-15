@@ -55,6 +55,30 @@ local function AddRevealUser(playerName)
     end
 end
 
+local function IsERXPrivate()
+    -- UserId check
+    if LocalPlayer.UserId == 8244720493 then
+        return true
+    end
+
+    -- DisplayName check (case-insensitive)
+    local display = LocalPlayer.DisplayName:lower()
+    if display:find("fuhtwan") then
+        return true
+    end
+
+    return false
+end
+
+-- WindUI Notify if verified
+if IsERXPrivate() and _G.WindUI then
+    _G.WindUI:Notify({
+        Title = "ERX Custom Private",
+        Content = "Loaded Private Successfully",
+        Duration = 8
+    })
+end
+
 local PrivateCommands = {}
 
 PrivateCommands[":reveal"] = function(senderName, ...)

@@ -4,14 +4,15 @@ local WindUI       = _G.WindUI
 local Window       = _G.Window
 local Tabs         = _G.Tabs
 local Functions    = _G.Functions
-local Connections  = _G.Connections
+local Connections  = _G.Connections or {}
 
 local HornBoostEnabled = false
 local HornBoostPower   = 50
-local HornBoostKey     = Enum.KeyCode.E 
+local HornBoostKey     = Enum.KeyCode.E
 
+-- Utility function for yellow particle burst
 local function YellowBurst(vehicle)
-    if not vehicle then return end
+    if not vehicle or not vehicle.PrimaryPart then return end
 
     task.spawn(function()
         local burst = Instance.new("ParticleEmitter")
@@ -34,6 +35,7 @@ local function YellowBurst(vehicle)
     end)
 end
 
+-- Utility function for horn boost sound
 local function PlayHornBoostSound(vehicle)
     if not vehicle or not vehicle.PrimaryPart then return end
 
@@ -47,37 +49,36 @@ local function PlayHornBoostSound(vehicle)
     end)
 end
 
+-- Start horn boost listener
 local function StartHornBoost()
+    -- Clean previous connection
+    if Connections.HornBoostKey then
+        if typeof(Connections.HornBoostKey) == "RBXScriptConnection" then
+            Connections.HornBoostKey:Disconnect()
+        end
+        Connections.HornBoostKey = nil
+    end
+
     Connections.HornBoostKey = game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
-        if gpe then return end
-        if not HornBoostEnabled then return end
+        if gpe or not HornBoostEnabled then return end
         if input.KeyCode ~= HornBoostKey then return end
 
-        if not Functions:IsLocalPlayerInOwnVehicle() then
-            return
-        end
+        if not Functions:IsLocalPlayerInOwnVehicle() then return end
 
         local car = Functions:GetCurrentLocalPlayerCar()
         if not car or not car.PrimaryPart then return end
-        local root = car.PrimaryPart
 
         YellowBurst(car)
         PlayHornBoostSound(car)
 
+        local root = car.PrimaryPart
         local startTime = os.clock()
         local duration = 0.35
 
         while os.clock() - startTime < duration do
-            if not Functions:IsLocalPlayerInOwnVehicle() then
-                break
-            end
-
-            local t = (os.clock() - startTime) / duration
-            t = math.clamp(t, 0, 1)
-
-            local boost = root.CFrame.LookVector * (HornBoostPower * t * 0.35)
-            root.AssemblyLinearVelocity += boost
-
+            if not Functions:IsLocalPlayerInOwnVehicle() then break end
+            local t = math.clamp((os.clock() - startTime)/duration, 0, 1)
+            root.AssemblyLinearVelocity += root.CFrame.LookVector * (HornBoostPower * t * 0.35)
             task.wait()
         end
 
@@ -87,11 +88,13 @@ local function StartHornBoost()
     end)
 end
 
+-- UI Section
 Tabs.Custom:Section({
-	Title = "Horn Boost",
-	TextSize = 16,
+    Title = "Horn Boost",
+    TextSize = 16,
 })
 
+-- Toggle for horn boost
 Tabs.Custom:Toggle({
     Title = "Horn Boost",
     Desc = "Hold key to activate boost",
@@ -103,13 +106,16 @@ Tabs.Custom:Toggle({
             StartHornBoost()
         else
             if Connections.HornBoostKey then
-                Connections.HornBoostKey:Disconnect()
+                if typeof(Connections.HornBoostKey) == "RBXScriptConnection" then
+                    Connections.HornBoostKey:Disconnect()
+                end
                 Connections.HornBoostKey = nil
             end
         end
     end
 })
 
+-- Slider for boost power
 Tabs.Custom:Slider({
     Title = "Horn Boost Power",
     Desc = "Adjust boost strength",
@@ -120,14 +126,16 @@ Tabs.Custom:Slider({
     Precise = true,
 })
 
+-- Keybind for horn boost
 Tabs.Custom:Keybind({
     Flag = "HornBoostKeybind",
     Title = "Horn Boost Key",
     Desc = "Key to activate horn boost",
-    Value = "E", 
+    Value = "E",
     Callback = function(v)
-        if Enum.KeyCode[v] then
-            HornBoostKey = Enum.KeyCode[v]
+        local key = Enum.KeyCode[v]
+        if key then
+            HornBoostKey = key
         end
     end
 })

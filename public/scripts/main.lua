@@ -68,7 +68,7 @@ Tabs.Custom:Section({
     Title = "Teleport Features"
 })
 
-loadstring(game:HttpGet("https://luamour.vercel.app/scripts/FlingAll.lua"))()
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/TPtoCar.lua"))()
 
 Tabs.Custom:Section({
     Title = "Misc Features"

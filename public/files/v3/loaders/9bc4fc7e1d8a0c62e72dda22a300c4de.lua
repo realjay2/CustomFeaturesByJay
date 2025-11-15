@@ -1,3 +1,1 @@
-local IsERX_Features = "Valid"
-
-print(IsERX_Features or "?")
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/main.lua"))()

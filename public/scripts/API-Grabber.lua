@@ -14,7 +14,7 @@ Tabs.Custom:Toggle({
     Title = "API Grabber",
     Desc = "Grabs Private Server API Key (Soon)",
     Default = false,
-    Locked = True,
+    Locked = true,
     Callback = function(value)
     end
 })

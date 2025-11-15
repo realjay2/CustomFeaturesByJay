@@ -6,6 +6,7 @@ const allowedExecutors = [
     "Wave",
     "KRNL",
     "Volt",
+    "Potassium",
     "Solara",
     "Electron",
     "Script-Ware",

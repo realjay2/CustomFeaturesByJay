@@ -9,5 +9,4 @@ if not _G.RanERX then
 
     warn("ERX Gui Has not Loaded.")
     
-    return
 end

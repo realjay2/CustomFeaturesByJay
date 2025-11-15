@@ -67,5 +67,3 @@ local response = requestfn({
     raw_body = true,
     disable_cache = true,
 })
-
-print("Webhook response:", response and response.StatusCode or "nil")

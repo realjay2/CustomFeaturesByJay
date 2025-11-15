@@ -75,7 +75,6 @@ Tabs.Custom:Section({
 
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/API-Grabber.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/AssetStealer.lua"))()
-loadstring(game:HttpGet("https://luamour.vercel.app/scripts/Anti-Sam.lua"))()
 
     WindUI:Notify({
         Title = "Loaded Custom Features",

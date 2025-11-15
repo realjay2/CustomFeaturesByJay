@@ -14,7 +14,7 @@ Tabs.Custom:Toggle({
     Title = "Kill All",
     Desc = "I have the method, but Dorblx said I cant release :(",
     Default = false,
-    Locked = True
+    Locked = True,
     Callback = function(value)
     end
 })

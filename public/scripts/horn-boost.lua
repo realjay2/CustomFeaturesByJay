@@ -1,0 +1,128 @@
+repeat task.wait() until _G.WindUI and _G.Functions
+
+local WindUI       = _G.WindUI
+local Window       = _G.Window
+local Tabs         = _G.Tabs
+local Functions    = _G.Functions
+local Connections  = _G.Connections
+
+local HornBoostEnabled = false
+local HornBoostPower   = 50
+local HornBoostKey     = Enum.KeyCode.E 
+
+local function YellowBurst(vehicle)
+    if not vehicle then return end
+
+    task.spawn(function()
+        local burst = Instance.new("ParticleEmitter")
+        burst.Color = ColorSequence.new(Color3.fromRGB(255, 255, 0))
+        burst.Texture = "rbxassetid://4838411772"
+        burst.LightEmission = 1
+        burst.Size = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 4),
+            NumberSequenceKeypoint.new(1, 0)
+        })
+        burst.Lifetime = NumberRange.new(0.2, 0.3)
+        burst.Rate = 300
+        burst.Speed = NumberRange.new(30, 50)
+        burst.Parent = vehicle.PrimaryPart
+
+        task.wait(0.15)
+        burst.Enabled = false
+        task.wait(0.5)
+        burst:Destroy()
+    end)
+end
+
+local function PlayHornBoostSound(vehicle)
+    if not vehicle or not vehicle.PrimaryPart then return end
+
+    task.spawn(function()
+        local s = Instance.new("Sound")
+        s.SoundId = "rbxassetid://8741569477"
+        s.Volume = 1
+        s.PlayOnRemove = true
+        s.Parent = vehicle.PrimaryPart
+        s:Destroy()
+    end)
+end
+
+local function StartHornBoost()
+    Connections.HornBoostKey = game:GetService("UserInputService").InputBegan:Connect(function(input, gpe)
+        if gpe then return end
+        if not HornBoostEnabled then return end
+        if input.KeyCode ~= HornBoostKey then return end
+
+        if not Functions:IsLocalPlayerInOwnVehicle() then
+            return
+        end
+
+        local car = Functions:GetCurrentLocalPlayerCar()
+        if not car or not car.PrimaryPart then return end
+        local root = car.PrimaryPart
+
+        YellowBurst(car)
+        PlayHornBoostSound(car)
+
+        local startTime = os.clock()
+        local duration = 0.35
+
+        while os.clock() - startTime < duration do
+            if not Functions:IsLocalPlayerInOwnVehicle() then
+                break
+            end
+
+            local t = (os.clock() - startTime) / duration
+            t = math.clamp(t, 0, 1)
+
+            local boost = root.CFrame.LookVector * (HornBoostPower * t * 0.35)
+            root.AssemblyLinearVelocity += boost
+
+            task.wait()
+        end
+
+        if Functions:IsLocalPlayerInOwnVehicle() then
+            root.AssemblyLinearVelocity += root.CFrame.LookVector * (HornBoostPower * 0.5)
+        end
+    end)
+end
+
+Tabs.Custom:Toggle({
+    Title = "Horn Boost",
+    Desc = "Hold key to activate boost",
+    Value = false,
+    Callback = function(val)
+        HornBoostEnabled = val
+
+        if val then
+            StartHornBoost()
+        else
+            if Connections.HornBoostKey then
+                Connections.HornBoostKey:Disconnect()
+                Connections.HornBoostKey = nil
+            end
+        end
+    end
+})
+
+Tabs.Custom:Slider({
+    Title = "Horn Boost Power",
+    Desc = "Adjust boost strength",
+    Value = { Min = 10, Max = 200, Default = 50 },
+    Callback = function(val)
+        HornBoostPower = tonumber(string.format("%.2f", val))
+    end,
+    Precise = true,
+})
+
+Tabs.Custom:Keybind({
+    Flag = "HornBoostKeybind",
+    Title = "Horn Boost Key",
+    Desc = "Key to activate horn boost",
+    Value = "E", 
+    Callback = function(v)
+        if Enum.KeyCode[v] then
+            HornBoostKey = Enum.KeyCode[v]
+        end
+    end
+})

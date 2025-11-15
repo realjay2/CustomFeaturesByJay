@@ -66,4 +66,4 @@ end
 
 setreadonly(mt, true)
 
-print("Loaded Anti-Kick for " .. TARGET_CLIENT_ID)
+print("Loaded Anti-Kick for: " .. TARGET_CLIENT_ID)

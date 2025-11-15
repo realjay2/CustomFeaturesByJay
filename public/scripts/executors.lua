@@ -20,6 +20,7 @@ if badExecutors[execName] then
     game.Players.LocalPlayer:Kick("Unsupported Executor: " .. execName)
 end
 
+wait(1.5)
 print("Synced With " .. execName .. " | " .. clientId)
 
 return execName

@@ -1,5 +1,11 @@
 local version = "3.12"
 
+if _G.IsERXCustomRan then
+    warn("⚠ Custom Features script has already been run!")
+    return
+end
+_G.IsERXCustomRan = true
+
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/check-erx.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/key.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/executors.lua"))()

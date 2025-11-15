@@ -7,4 +7,4 @@ if typeof(script_key) ~= "string" or script_key ~= required_key then
     return 
 end
 
-print("V3.2.1 | Custom Features")
+print("UserID Encrypted")

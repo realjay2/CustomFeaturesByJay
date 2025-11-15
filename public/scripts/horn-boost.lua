@@ -131,7 +131,7 @@ Tabs.Custom:Keybind({
     Flag = "HornBoostKeybind",
     Title = "Horn Boost Key",
     Desc = "Key to activate horn boost",
-    Value = "E",
+    Value = "H",
     Callback = function(v)
         local key = Enum.KeyCode[v]
         if key then

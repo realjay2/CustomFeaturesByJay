@@ -14,7 +14,7 @@ Tabs.Custom:Toggle({
     Title = "Auto Arrest",
     Desc = "Auto Arrest V2 (Soon)",
     Default = false,
-    Locked = True,
+    Locked = true,
     Callback = function(value)
     end
 })

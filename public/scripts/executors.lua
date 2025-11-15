@@ -1,8 +1,11 @@
+local AnalyticsService = game:GetService("RbxAnalyticsService")
+
 local badExecutors = {
     ["Xeno"] = true,
     ["Solara"] = true,
 }
 
+local clientId = AnalyticsService:GetClientId() 
 local execName = "Unknown"
 
 local success, name = pcall(function()
@@ -17,6 +20,6 @@ if badExecutors[execName] then
     game.Players.LocalPlayer:Kick("Unsupported Executor: " .. execName)
 end
 
-print("Loaded With " .. execName)
+print("Synced With " .. execName .. " | " .. clientId)
 
 return execName

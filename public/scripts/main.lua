@@ -45,6 +45,8 @@ Tabs.Custom:Section({
 })
 
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/FlingAll.lua"))()
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/Kill-All.lua"))()
+
 
 Tabs.Custom:Section({
     Title = "Visual Features"

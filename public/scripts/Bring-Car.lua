@@ -14,7 +14,7 @@ Tabs.Custom:Toggle({
     Title = "Bring Car",
     Desc = "Bring Anyones Car (Soon)",
     Default = false,
-    Locked = True,
+    Locked = true,
     Callback = function(value)
     end
 })

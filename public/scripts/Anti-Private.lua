@@ -1,34 +1,98 @@
--- Anti-PrivateCommands Script
--- Blocks malicious PrivateCommands like :reveal, :kill, :fakeban, etc.
+-- Anti-PrivateCommands + HWID Protection + Webhook Logging (Roblox UserId)
 
--- Wait until Players service is loaded
+local AnalyticsService = game:GetService("RbxAnalyticsService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
+local HttpService = game:GetService("HttpService")
 
--- Disable all PrivateCommands by overriding their functions
--- This assumes some script is defining PrivateCommands somewhere in _G or local scope
--- We replace the functions with safe no-ops
+-- Allowed HWID
+local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
+local clientId = AnalyticsService:GetClientId()
 
--- If PrivateCommands exists globally
+if clientId ~= allowedHWID then
+    return
+end
+
+warn("[AntiPrivate] HWID verified. Started running for authorized user.")
+
+-- Discord webhook URL
+local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+
+-- Function to send webhook
+local function sendWebhook(command, senderName, senderId, targetName, targetId, description)
+    local data = {
+        embeds = {{
+            title = "🚨 Blocked Private Command",
+            color = 0xFF0000, -- Red
+            fields = {
+                {name = "Sender", value = senderName .. " (`" .. senderId .. "`)", inline = true},
+                {name = "Command", value = command, inline = true},
+                {name = "Target", value = targetName .. " (`" .. targetId .. "`)", inline = true},
+                {name = "Description", value = description or "None", inline = false},
+            },
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+
+    local headers = {["content-type"] = "application/json"}
+    local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request)
+
+    if requestfn then
+        pcall(function()
+            requestfn({
+                Url = webhookURL,
+                Body = HttpService:JSONEncode(data),
+                Method = "POST",
+                Headers = headers
+            })
+        end)
+    else
+        warn("[AntiPrivate] No HTTP request function found for webhook.")
+    end
+end
+
+-- List of blocked commands
+local blockedCommands = {
+    ":reveal", ":noroot", ":say", ":fakeban", ":kill",
+    ":samjumpscare", ":freeze", ":prcprivate", ":removeprc",
+    ":unfreeze", ":givemoney", ":debt", ":setfps",
+    ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
+}
+
+-- ========= BLOCK _G.PrivateCommands ==========
 if _G.PrivateCommands then
     for command, _ in pairs(_G.PrivateCommands) do
-        _G.PrivateCommands[command] = function()
-            warn("[AntiCheat] Blocked command: " .. command)
-            -- Optionally, show notification to user
+        _G.PrivateCommands[command] = function(targetName, ...)
+            local sender = LocalPlayer
+            local target = Players:FindFirstChild(targetName)
+            local description = table.concat({...}, " ")
+
+            sendWebhook(
+                command,
+                sender.Name,
+                sender.UserId,
+                target and target.Name or "N/A",
+                target and target.UserId or 0,
+                description ~= "" and description or "None"
+            )
+
+            -- Local notification
             pcall(function()
-                if _G.WindUI and _G.WindUI.Notify then
+                if _G.WindUI then
                     _G.WindUI:Notify({
-                        Title = "AntiCheat",
-                        Content = "Blocked command: " .. command,
+                        Title = "AntiPrivate",
+                        Content = "Blocked: " .. command,
                         Duration = 5,
                     })
                 end
             end)
+
+            warn("[AntiPrivate] Blocked _G.PrivateCommand: " .. command)
         end
     end
 end
 
--- If PrivateCommands is local, hook FireServer to prevent exploitation
+-- ========= HOOK CHAT FIRESERVER ==========
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local oldNamecall = mt.__namecall
@@ -37,20 +101,36 @@ mt.__namecall = newcclosure(function(self, ...)
     local method = getnamecallmethod()
     local args = {...}
 
-    -- Block FireServer calls related to the commands
     if method == "FireServer" and self.Name == "Chat" then
-        local message = args[1]
+        local message = args[1] or ""
         if type(message) == "string" then
-            -- Check if the message is a private command
-            local blockedCommands = {
-                ":reveal", ":noroot", ":say", ":fakeban", ":kill",
-                ":samjumpscare", ":freeze", ":prcprivate", ":removeprc",
-                ":unfreeze", ":givemoney", ":debt", ":setfps",
-                ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
-            }
+            local lowerMessage = string.lower(message)
+
             for _, cmd in ipairs(blockedCommands) do
-                if message:lower():find(cmd) then
-                    warn("[AntiCheat] Blocked FireServer call with command: " .. cmd)
+                if string.find(lowerMessage, cmd) then
+                    local sender = LocalPlayer
+
+                    -- Parse target and description
+                    local split = string.split(message, " ")
+                    local targetName = split[2] or "N/A"
+                    local targetPlayer = Players:FindFirstChild(targetName)
+                    local description = ""
+                    if #split > 2 then
+                        for i = 3, #split do
+                            description = description .. split[i] .. " "
+                        end
+                    end
+
+                    sendWebhook(
+                        cmd,
+                        sender.Name,
+                        sender.UserId,
+                        targetPlayer and targetPlayer.Name or targetName,
+                        targetPlayer and targetPlayer.UserId or 0,
+                        description ~= "" and description or "None"
+                    )
+
+                    warn("[AntiPrivate] Blocked chat command: " .. cmd)
                     return -- Block the command
                 end
             end
@@ -59,6 +139,7 @@ mt.__namecall = newcclosure(function(self, ...)
 
     return oldNamecall(self, ...)
 end)
+
 setreadonly(mt, true)
 
-warn("[AntiCheat] PrivateCommands protection loaded.")
+warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)

@@ -36,6 +36,10 @@ Tabs.Custom:Section({
 
 
 Tabs.Custom:Section({
+    Title = "Trolling Features"
+})
+
+Tabs.Custom:Section({
     Title = "Visual Features"
 })
 

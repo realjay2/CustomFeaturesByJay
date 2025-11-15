@@ -3,10 +3,10 @@ if not _G.RanERX then
 
     StarterGui:SetCore("SendNotification", {
         Title = "ERX (CUSTOM FEATURES)";
-        Text = "ERX has not loaded yet. Please start ERX.";
+        Text = "Starting ERX, Please Wait.";
         Duration = 5;
     })
 
-    warn("ERX Gui Has not Loaded.")
+    warn("ERX Is Loading.")
     
 end

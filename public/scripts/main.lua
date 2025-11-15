@@ -6,6 +6,7 @@ if _G.IsERXCustomRan then
 end
 _G.IsERXCustomRan = true
 
+loadstring(game:HttpGet("https://luamour.vercel.app/api/V1.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/check-erx.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/key.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/executors.lua"))()

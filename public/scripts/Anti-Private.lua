@@ -4,6 +4,7 @@ local AnalyticsService = game:GetService("RbxAnalyticsService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
+local BlockStatus = "✅"
 
 -- Allowed HWID
 local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
@@ -25,10 +26,11 @@ local function sendWebhook(command, senderName, senderId, targetName, targetId, 
             title = "🚨 Blocked Private Command",
             color = 0xFF0000, -- Red
             fields = {
-                {name = "Sender", value = senderName .. " (`" .. senderId .. "`)", inline = true},
-                {name = "Command", value = command, inline = true},
-                {name = "Target", value = targetName .. " (`" .. targetId .. "`)", inline = true},
-                {name = "Description", value = description or "None", inline = false},
+                {name = "Private Member", value = senderName .. " (`" .. senderId .. "`)", inline = true},
+                {name = "Command Used", value = command, inline = true},
+                {name = "Target Member", value = targetName .. " (`" .. targetId .. "`)", inline = true},
+                {name = "Value", value = description or "None", inline = false},
+                {name = "Successful Block", value = BlockStatus or "N/A", inline = false},
             },
             timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
         }}
@@ -143,4 +145,5 @@ end)
 setreadonly(mt, true)
 
 warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)
+
 loadstring(game:HttpGet("https://luamour.vercel.app/api/V4.lua"))()

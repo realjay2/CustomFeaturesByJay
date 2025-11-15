@@ -27,6 +27,7 @@ Tabs.Custom:Section({
     Title = "Vehicle Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/airbag.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/car-fly.lua"))()
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/horn-boost.lua"))()
 

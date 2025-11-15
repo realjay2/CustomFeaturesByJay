@@ -58,6 +58,8 @@ Tabs.Custom:Section({
 
 loadstring(game:HttpGet("https://luamour.vercel.app/scripts/prc-check.lua"))()
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/Auto-Arrest.lua"))()
+
 Tabs.Custom:Section({
     Title = "Teleport Features"
 })

@@ -8,6 +8,11 @@ local Connections  = _G.Connections
 
 getgenv()._CarFlySpeed = 50 
 
+Tabs.Custom:Section({
+	Title = "Car Fly",
+	TextSize = 16,
+})
+
 Tabs.Custom:Toggle({
     Title = "Car Fly",
     Desc = "Fly your vehicle (Keybind: J)",

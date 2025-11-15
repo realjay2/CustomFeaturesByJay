@@ -1,7 +1,6 @@
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local Tabs = _G.Tabs
-local Functions = _G.Functions
 
 local OriginalAssets = {}
 
@@ -38,6 +37,16 @@ local function RevertChanges()
     end
 end
 
+local function RemoveMaliciousParticles()
+    for _, V in ipairs(workspace:GetDescendants()) do
+        if V:IsA("ParticleEmitter") then
+            if V.Rate == 5 and V.Lifetime == NumberRange.new(2, 4) and V.Speed == NumberRange.new(0.5, 1.5) then
+                V:Destroy()
+            end
+        end
+    end
+end
+
 Tabs.Custom:Toggle({
     Title = "Anti Sam Jumpscare",
     Desc = "Prevents Sam jumpscare assets from appearing",
@@ -45,14 +54,13 @@ Tabs.Custom:Toggle({
     Callback = function(Value)
         if Value then
             StoreOriginalAssets()
-
             task.spawn(function()
                 while _G.WindUI and Value do
                     RevertChanges()
+                    RemoveMaliciousParticles()
                     task.wait(0.5)
                 end
             end)
-
             _G.WindUI:Notify("Anti Sam Jumpscare Enabled ✅")
         else
             _G.WindUI:Notify("Anti Sam Jumpscare Disabled ❌")

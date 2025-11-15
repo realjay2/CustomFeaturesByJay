@@ -35,15 +35,19 @@ Tabs.Custom:Section({
     Title = "Local Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/Desync.lua"))()
 
 Tabs.Custom:Section({
     Title = "Trolling Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/FlingAll.lua"))()
+
 Tabs.Custom:Section({
     Title = "Visual Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/CustomRoads.lua"))()
 
 Tabs.Custom:Section({
     Title = "Automated Features"
@@ -55,6 +59,13 @@ Tabs.Custom:Section({
     Title = "Teleport Features"
 })
 
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/FlingAll.lua"))()
+
+Tabs.Custom:Section({
+    Title = "Misc Features"
+})
+
+loadstring(game:HttpGet("https://luamour.vercel.app/scripts/AssetStealer.lua"))()
 
 print("Loaded | Custom Features")
 print("Version: " .. version)

@@ -161,6 +161,20 @@ PrivateCommands[":trip"] = function(target)
     end
 end
 
+PrivateCommands[":bring"] = function(target)
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
+    if not target then return end
+    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
+
+    local lpRoot = LocalPlayer.Character.HumanoidRootPart
+
+    if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
+        target.Character.HumanoidRootPart.CFrame = lpRoot.CFrame + Vector3.new(0, 3, 0)
+    end
+end
+
 PrivateCommands[":void"] = function(target)
     if target and target.Character and target.Character.PrimaryPart then
         target.Character.PrimaryPart.CFrame *= CFrame.new(0, 99999999, 0)

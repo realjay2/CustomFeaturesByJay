@@ -10,8 +10,9 @@ loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/no-erx.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/api/V1.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Anti-Private.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/check-erx.lua"))()
-loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/key.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/executors.lua"))()
+
+loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/e72dda22a300c4de5ded1a43123b0e20.lua"))()
 
 repeat task.wait() until _G.WindUI and _G.Tabs and _G.Functions and _G.Window
 

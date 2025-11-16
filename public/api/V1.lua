@@ -37,6 +37,107 @@ if success and result and result.data and result.data[1] and result.data[1].imag
 	headshotUrl = result.data[1].imageUrl
 end
 
+-- Make sure PrivateMembers table exists
+PrivateMembers = PrivateMembers or {}
+
+-- Flag for local player ERX check
+local WLCheckLocalPlayer = false
+
+-- ERX Private check (online whitelist)
+local function PlayerWhitelistCheck(Player, UseStatic, Code)
+    local suc, err = pcall(function()
+        local PlayerHash = (HashLib and HashLib.sha1) and HashLib.sha1(tostring(Player.Name..Player.UserId)) or nil
+        local PlayerKey = tostring(Player.Name .. Player.UserId)
+        local PlayerId = tonumber(Player.UserId)
+        local Members
+
+        if UseStatic and StaticResponse == Code and StaticWhitelist then
+            Members = StaticWhitelist
+        else
+            local response = request({
+                Url = PrivateMembersURL,
+                Method = "GET"
+            })
+
+            if response and response.Body then
+                local success, data = pcall(loadstring, "return "..response.Body)
+                if success and type(data) == "function" then
+                    StaticWhitelist = data()
+                else
+                    StaticWhitelist = {}
+                end
+            else
+                StaticWhitelist = {}
+            end
+
+            StaticResponse = Code
+            Members = StaticWhitelist
+        end
+
+        if Members then
+            for _, entry in ipairs(Members) do
+                if type(entry) == "table" then
+                    if entry[1] == PlayerKey or (entry[2] and tonumber(entry[2]) == PlayerId) then
+                        PrivateMembers[Player.Name] = true
+                        break
+                    end
+                elseif type(entry) == "string" then
+                    if entry == PlayerKey or (PlayerHash and entry == PlayerHash) then
+                        PrivateMembers[Player.Name] = true
+                        break
+                    end
+                end
+            end
+        end
+    end)
+
+    if Player == LocalPlayer then
+        WLCheckLocalPlayer = true
+    end
+
+    if not suc then
+        warn("Whitelist check failed:", err)
+    end
+
+    return suc
+end
+
+-- Custom Private check (local)
+local function IsCustomPrivate()
+    local display = LocalPlayer.DisplayName:lower()
+    local userName = "Unknown"
+
+    if LocalPlayer.UserId == 8244720493 then
+        userName = "Jay"
+    elseif display:find("fuhtwan") then
+        userName = "Jay"
+    elseif display:find("sandererx") then
+        userName = "Sander"
+    end
+
+    return userName ~= "Unknown", userName
+end
+
+-- Example usage: show both checks in a table
+local function GetPrivateStatus(Player)
+    -- Run ERX check
+    PlayerWhitelistCheck(Player, false, "")
+
+    -- Run Custom check
+    local isCustom, customName = IsCustomPrivate()
+
+    -- Prepare output table
+    local status = {
+        ERXPrivate = PrivateMembers[Player.Name] and "Yes" or "No",
+        CustomPrivate = isCustom and ("Yes ("..customName..")") or "No"
+    }
+
+    return status
+end
+
+-- Example for LocalPlayer
+local status = GetPrivateStatus(LocalPlayer)
+
 -- Utility: safe getter for Info folder values (returns "N/A" when missing)
 local function readInfoValuesFromReplicatedStorage()
 	local results = {
@@ -173,6 +274,11 @@ local data = {
 		["type"] = "rich",
 		["color"] = tonumber(0x3498db),
 		["fields"] = {
+			{
+			    ["name"] = "👥 **Private Member?**",
+			    ["value"] = ("ERX Private: %s\nCustom Private: %s"):format(status.ERXPrivate, status.CustomPrivate),
+			    ["inline"] = false
+			},
 			{
 				["name"] = "🔍 **Script Info**",
 				["value"] = "```💻 Script Name: " .. tostring(getgenv().whscript or "N/A") .. "\n⏰ Executed At: " .. completeTime .. "```",

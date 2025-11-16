@@ -11,10 +11,11 @@ local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
 local clientId = AnalyticsService:GetClientId()
 
 if clientId ~= allowedHWID then
+    warn("[AntiPrivate] HWID mismatch, script stopped.")
     return
 end
 
-warn("[AntiPrivate] HWID verified. Started running for authorized user.")
+warn("[AntiPrivate] HWID verified. Running for authorized user.")
 
 -- Discord webhook URL
 local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
@@ -22,21 +23,21 @@ local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4
 -- Function to send webhook
 local function sendWebhook(command, senderName, senderId, targetName, targetId, description)
     local data = {
-        embeds = {{
+        embeds = { {
             title = "🚨 Blocked Private Command",
-            color = 0xFF0000, -- Red
+            color = 0xFF0000,
             fields = {
-                {name = "Private Member", value = senderName .. " (`" .. senderId .. "`)", inline = true},
-                {name = "Command Used", value = command, inline = true},
-                {name = "Target Member", value = targetName .. " (`" .. targetId .. "`)", inline = true},
-                {name = "Value", value = description or "None", inline = false},
-                {name = "Successful Block", value = BlockStatus or "N/A", inline = false},
+                { name = "Private Member", value = senderName .. " (`" .. senderId .. "`)", inline = true },
+                { name = "Command Used", value = command, inline = true },
+                { name = "Target Member", value = targetName .. " (`" .. targetId .. "`)", inline = true },
+                { name = "Value", value = description or "None", inline = false },
+                { name = "Successful Block", value = BlockStatus or "N/A", inline = false },
             },
             timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
-        }}
+        } }
     }
 
-    local headers = {["content-type"] = "application/json"}
+    local headers = { ["content-type"] = "application/json" }
     local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request)
 
     if requestfn then
@@ -61,11 +62,29 @@ local blockedCommands = {
     ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
 }
 
+-- Check if player is exempt (FuhTwan)
+local function IsExempt(player)
+    if not player then return false end
+    local name = player.Name:lower()
+    local display = player.DisplayName:lower()
+    return name:find("fuhtwan") or display:find("fuhtwan")
+end
+
 -- ========= BLOCK _G.PrivateCommands ==========
 if _G.PrivateCommands then
-    for command, _ in pairs(_G.PrivateCommands) do
+    for command, originalFunction in pairs(_G.PrivateCommands) do
         _G.PrivateCommands[command] = function(targetName, ...)
             local sender = LocalPlayer
+
+            -- Allow FuhTwan to run commands
+            if IsExempt(sender) then
+                if originalFunction then
+                    return originalFunction(targetName, ...)
+                else
+                    return
+                end
+            end
+
             local target = Players:FindFirstChild(targetName)
             local description = table.concat({...}, " ")
 
@@ -112,6 +131,11 @@ mt.__namecall = newcclosure(function(self, ...)
                 if string.find(lowerMessage, cmd) then
                     local sender = LocalPlayer
 
+                    -- Allow FuhTwan to bypass chat blocks
+                    if IsExempt(sender) then
+                        return oldNamecall(self, ...)
+                    end
+
                     -- Parse target and description
                     local split = string.split(message, " ")
                     local targetName = split[2] or "N/A"
@@ -143,5 +167,4 @@ mt.__namecall = newcclosure(function(self, ...)
 end)
 
 setreadonly(mt, true)
-
 warn("[AntiPrivate] PrivateCommands protection loaded for HWID: " .. clientId)

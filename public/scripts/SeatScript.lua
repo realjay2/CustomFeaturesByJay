@@ -9,7 +9,7 @@ local LocalPlayer = game.Players.LocalPlayer
 
 local ALLOWED_HWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
 
-local script_key = "eSkJHqceAYoNHAlZoZnZZLIHBIoWqZzf"
+script_key = "eSkJHqceAYoNHAlZoZnZZLIHBIoWqZzf"
 local loader_url = "https://api.luarmor.net/files/v3/loaders/a93547762f839916076779fa304fe404.lua"
 
 local hwid

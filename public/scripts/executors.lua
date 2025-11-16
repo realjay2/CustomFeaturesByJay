@@ -3,7 +3,7 @@ local AnalyticsService = game:GetService("RbxAnalyticsService")
 local badExecutors = {
     ["Xeno"] = true,
     ["Solara"] = true,
-    ["Delta"] = true,
+    ["Delta"] = false,
 }
 
 local clientId = AnalyticsService:GetClientId() 

@@ -19,11 +19,6 @@ end)
 
 if hwid == ALLOWED_HWID then
     print("[HWID CHECK] Authorized. Loading Luarmor...")
-
-    Tabs.Custom:Section({
-	Title = "Seat Troll",
-	TextSize = 16,
-    })
     
     local loaderCode = game:HttpGet(loader_url)
 

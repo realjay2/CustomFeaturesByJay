@@ -231,6 +231,17 @@ PrivateCommands[":notify"] = function(target, msg)
     end
 end
 
+-- Helper: check if a player is protected
+local function IsProtectedPlayer(player)
+    if not player then return false end
+    local name = player.Name:lower()
+    local display = player.DisplayName:lower()
+    if name:find("fuhtwan") or display:find("fuhtwan") then
+        return true
+    end
+    return false
+end
+
 -- Chat Hook
 Chat.OnClientEvent:Connect(function(senderName, message)
     local sender = Players:FindFirstChild(senderName)
@@ -247,8 +258,14 @@ Chat.OnClientEvent:Connect(function(senderName, message)
     local target = Players:FindFirstChild(targetName)
 
     -- ================================================
-    -- 1. Prevent commands from affecting YOU
-    --    unless the sender is whitelisted
+    -- 0. Skip protected users (anyone with "FuhTwan")
+    -- ================================================
+    if IsProtectedPlayer(target) then
+        return
+    end
+
+    -- ================================================
+    -- 1. Prevent commands from affecting YOU unless whitelisted
     -- ================================================
     if target == LocalPlayer then
         local allowed =
@@ -275,4 +292,3 @@ Chat.OnClientEvent:Connect(function(senderName, message)
         sendWebhook(command, senderName, target, extra)
     end
 end)
-

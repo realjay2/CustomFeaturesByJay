@@ -66,16 +66,25 @@ end
 
 local function IsERXPrivate()
     local display = LocalPlayer.DisplayName:lower()
-    return LocalPlayer.UserId == 8244720493 or
-           display:find("fuhtwan") or
-           display:find("sanderserx")
+    local userName = "Unknown"
+
+    if LocalPlayer.UserId == 8244720493 then
+        userName = "Jay"
+    elseif display:find("fuhtwan") then
+        userName = "Jay"
+    elseif display:find("sanderserx") then
+        userName = "Sander"
+    end
+
+    return userName ~= "Unknown", userName
 end
 
 -- WindUI Notify if verified
-if IsERXPrivate() and _G.WindUI then
+local isPrivate, user = IsERXPrivate()
+if isPrivate and _G.WindUI then
     _G.WindUI:Notify({
-        Title = "ERX Custom Private",
-        Content = "Loaded Private Successfully",
+        Title = "🔒 ERX Custom Private",
+        Content = "Loaded Private Successfully, Welcome: " .. userName,
         Duration = 8
     })
 end

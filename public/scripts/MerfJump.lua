@@ -212,6 +212,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
+Tabs.Custom:Section({
+    Title = "Merfs Car Jump",
+    TextSize = 16,
+})
+
 Tabs.Custom:Toggle({
     Title = "Car Jump",
     Desc = "Press H to make your car jump",

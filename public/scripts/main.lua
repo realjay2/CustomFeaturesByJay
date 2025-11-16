@@ -45,6 +45,7 @@ Tabs.Custom:Section({
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/airbag.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/car-fly.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/horn-boost.lua"))()
+loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/MerfJump.lua"))()
 
 Tabs.Custom:Section({
     Title = "Local Features"

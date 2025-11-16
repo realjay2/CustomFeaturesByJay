@@ -40,8 +40,8 @@ Tabs.Custom:Section({
 })
 
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Airbags.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Car-Fly.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Horn-Boost.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Car_Fly.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Horn_Boost.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/MerfJump.lua"))()
 
 Tabs.Custom:Section({
@@ -56,8 +56,8 @@ Tabs.Custom:Section({
 })
 
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/FlingAll.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Kill-All.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Bring-Car.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Kill_All.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Bring_Car.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/SeatScript.lua"))()
 
 Tabs.Custom:Section({
@@ -71,8 +71,8 @@ Tabs.Custom:Section({
 })
 
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/PRC_Check.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Auto-Drive.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Auto-Arrest.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Auto_Drive.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Auto_Arrest.lua"))()
 
 Tabs.Custom:Section({
     Title = "Teleport Features"

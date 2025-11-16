@@ -18,6 +18,7 @@ local activeJumps = {}
 -- Flags to ignore initial toggle callbacks
 local carJumpToggleInitialized = false
 local backflipToggleInitialized = false
+local carJumpEnabled = false -- toggle state
 
 local function getVehicle()
     local char = Player.Character
@@ -45,6 +46,8 @@ local function cleanupGyro(vehicle)
 end
 
 local function makeCarJump()
+    if not carJumpEnabled then return end -- stop if toggle is off
+
     local currentTime = tick()
     if currentTime - lastJumpTime < cooldown then
         return
@@ -207,7 +210,7 @@ end)
 
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.KeyCode == jumpKeybind then
+    if input.KeyCode == jumpKeybind and carJumpEnabled then
         makeCarJump()
     end
 end)
@@ -222,6 +225,7 @@ Tabs.Custom:Toggle({
     Desc = "Press H to make your car jump",
     Value = false,
     Callback = function(state)
+        carJumpEnabled = state
         if carJumpToggleInitialized then
             WindUI:Notify({
                 Title = "Car Jump",
@@ -239,6 +243,11 @@ Tabs.Custom:Toggle({
     Desc = "Enable perfect backflips on jump",
     Value = false,
     Callback = function(state)
+        if not carJumpEnabled then
+            -- ignore backflip toggle if main toggle is off
+            backflipMode = false
+            return
+        end
         backflipMode = state
         if backflipToggleInitialized then
             WindUI:Notify({
@@ -257,7 +266,9 @@ Tabs.Custom:Slider({
     Desc = "Adjust jump height",
     Value = { Min = 50, Max = 200, Default = 100 },
     Callback = function(val)
-        jumpPower = tonumber(string.format("%.0f", val))
+        if carJumpEnabled then
+            jumpPower = tonumber(string.format("%.0f", val))
+        end
     end,
     Precise = true,
 })

@@ -74,6 +74,8 @@ local function IsERXPrivate()
         userName = "Jay"
     elseif display:find("sandererx") then
         userName = "Sander"
+    elseif display:find("77") then
+        userName = "Mateymate"
     end
 
     return userName ~= "Unknown", userName

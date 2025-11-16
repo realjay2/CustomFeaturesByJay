@@ -1,5 +1,3 @@
-loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/detected.lua"))()
-
 local version = "3.12"
 
 if _G.IsERXCustomRan then

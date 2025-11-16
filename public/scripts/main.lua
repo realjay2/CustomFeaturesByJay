@@ -9,7 +9,6 @@ _G.IsERXCustomRan = true
 loadstring(game:HttpGet("https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/Bypass.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/no-erx.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/api/V1.lua"))()
-loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Anti-Private.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/check-erx.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/executors.lua"))()
 

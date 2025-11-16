@@ -14,7 +14,7 @@ end
 
 warn("[AntiPrivate] HWID verified. Running for authorized user.")
 
-local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+local webhookURL = "https://discord.com/api/webhooks/1439696796686225638/hfg2yu0LrvxZV1Gm74xSI2dKEiNKHzdYdGRZQJDzN4-gZwVCeV5nMfWm1pYIb20nPLHT"
 
 local function sendWebhook(command, senderName, senderId, targetName, targetId, description)
     local data = {

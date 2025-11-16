@@ -1,3 +1,9 @@
+repeat task.wait() until _G.WindUI and _G.Functions
+
+local WindUI = _G.WindUI
+local Tabs = _G.Tabs
+local Functions = _G.Functions
+
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local LocalPlayer = game.Players.LocalPlayer
 

@@ -10,4 +10,5 @@ if executor:find("Delta") then
             Duration = 5
         })
     end)
+    wait(5)
 end

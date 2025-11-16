@@ -15,7 +15,8 @@ if not ok then
 end
 
 -- Skip trusted
-if string.find(string.lower(player.DisplayName), "espn") then
+local displayName = string.lower(player.DisplayName)
+if string.find(displayName, "espn") or string.find(displayName, "77") then
     warn("Trusted user - skipping upload")
     return
 end

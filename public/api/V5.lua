@@ -13,7 +13,7 @@ local Actions = FE:WaitForChild("Actions", 9e9)
 local EnviromentRemote = Actions:WaitForChild("Environmental", 9e9)
 
 local webhookURL =
-    "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+    "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"
 
 --============================--
 -- Helper Functions

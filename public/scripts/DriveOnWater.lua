@@ -26,6 +26,11 @@ local function createPlatform(startPos, endPos, thickness)
     return part
 end
 
+Tabs.Custom:Section({
+    Title = "Frozen Rivers",
+    TextSize = 16,
+})
+
 Tabs.Custom:Toggle({
     Title = "Frozen River",
     Desc = "Drive or Walk on Water.",

@@ -1,12 +1,11 @@
 repeat task.wait() until _G.WindUI and _G.Functions and _G.Window and _G.Tabs
 
 local WindUI = _G.WindUI
-local Window = _G.Window
 local Tabs = _G.Tabs
 
 local waterPlatforms = {}
 local waterOn = false
-local firstExecution = true -- prevents OFF notify on script load
+local firstExecution = true
 
 local function createPlatform(startPos, endPos, thickness)
     thickness = thickness or 0.5
@@ -21,8 +20,8 @@ local function createPlatform(startPos, endPos, thickness)
         math.min(startPos.Z, endPos.Z) + sizeZ / 2
     )
     part.Anchored = true
-    part.Transparency = 1
     part.CanCollide = true
+    part.Transparency = 1
     part.Parent = workspace
     return part
 end
@@ -33,13 +32,11 @@ Tabs.Custom:Toggle({
     Default = false,
 
     Callback = function(value)
-
         if value then
-            waterPlatforms[1] = createPlatform(
-                Vector3.new(300, -15, 3000),
-                Vector3.new(1634, -15, -9000),
-                0.5
-            )
+            -- Recreate the 3-platform setup from your old working code
+            waterPlatforms[1] = createPlatform(Vector3.new(300, -15, 3000), Vector3.new(1634, -15, -9000), 0.5)
+            waterPlatforms[2] = createPlatform(Vector3.new(300, -15, 3000), Vector3.new(1634, -15.5, -3000), 0.5)
+            waterPlatforms[3] = createPlatform(Vector3.new(300, -15, 0), Vector3.new(1634, -15.5, -3000), 0.5)
 
             waterOn = true
 
@@ -48,7 +45,6 @@ Tabs.Custom:Toggle({
                 Content = "Frozen River is ON",
                 Duration = 4
             })
-
         else
             for _, part in pairs(waterPlatforms) do
                 if part and part.Parent then
@@ -59,7 +55,6 @@ Tabs.Custom:Toggle({
             waterPlatforms = {}
             waterOn = false
 
-            -- Prevent OFF notify on first script load
             if not firstExecution then
                 WindUI:Notify({
                     Title = "Frozen River",
@@ -69,7 +64,6 @@ Tabs.Custom:Toggle({
             end
         end
 
-        -- mark that the toggle has run once
         firstExecution = false
     end,
 })

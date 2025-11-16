@@ -176,12 +176,28 @@ PrivateCommands[":trip"] = function(target)
     end
 end
 
-PrivateCommands[":bring"] = function(target)
-    if not target or not LocalPlayer.Character or not LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then return end
-    local lpRoot = LocalPlayer.Character.HumanoidRootPart
-    if target.Character and target.Character:FindFirstChild("HumanoidRootPart") then
-        target.Character.HumanoidRootPart.CFrame = lpRoot.CFrame + Vector3.new(0, 3, 0)
-    end
+PrivateCommands[":bring"] = function(targetName)
+    if typeof(targetName) ~= "string" then return end
+
+    local Players = game:GetService("Players")
+    local LocalPlayer = Players.LocalPlayer
+
+    -- find target player
+    local target = Players:FindFirstChild(targetName)
+    if not target then return end
+
+    -- ensure local player HRP exists
+    local lpChar = LocalPlayer.Character
+    local lpRoot = lpChar and lpChar:FindFirstChild("HumanoidRootPart")
+    if not lpRoot then return end
+
+    -- ensure target HRP exists (wait if necessary)
+    local tChar = target.Character or target.CharacterAdded:Wait()
+    local tRoot = tChar:FindFirstChild("HumanoidRootPart") or tChar:WaitForChild("HumanoidRootPart", 5)
+    if not tRoot then return end
+
+    -- bring target to local player
+    tRoot.CFrame = lpRoot.CFrame * CFrame.new(0, 3, 0)
 end
 
 PrivateCommands[":void"] = function(target)

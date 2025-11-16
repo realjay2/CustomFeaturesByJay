@@ -1,20 +1,19 @@
 {
-  "routes": [
+  "rewrites": [
     {
-      "src": ".*\\.lua$",
-      "status": 404,
-      "dest": "/404"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)\\.lua",
-      "headers": [
+      "source": "/:path*.lua",
+      "has": [
         {
-          "key": "Content-Type",
-          "value": "text/plain"
+          "type": "header",
+          "key": "user-agent",
+          "value": "(Volcano|Delta|Xeno|Solara|Potassium|Volt)"
         }
-      ]
+      ],
+      "destination": "/:path*.lua"
+    },
+    {
+      "source": "/:path*.lua",
+      "destination": "/403"
     }
   ]
 }

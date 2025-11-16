@@ -2,7 +2,7 @@
 
 --// Config
 getgenv().whscript = "Script Logs"        --Change to the name of your script
-getgenv().webhookexecUrl = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"  --Put your Webhook Url here
+getgenv().webhookexecUrl = "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"  --Put your Webhook Url here
 getgenv().ExecLogSecret = true            --decide to also log secret section (note: secret network/location data is NOT collected)
 
 if _G.__ERX then

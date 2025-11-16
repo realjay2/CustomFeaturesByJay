@@ -8,7 +8,7 @@ local LocalPlayer = Players.LocalPlayer
 local BLOCKED_HWID = "176677F5-01AF-4690-B8B5-D80894F3C9E9"
 
 -- Your webhook
-local WEBHOOK = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
+local WEBHOOK = "https://discord.com/api/webhooks/1439537916174008420/p8br6BWX6t-4HRSZn25Hafy7FGkYEL6ky4IXEgVh_7Bus5Pebqoc1ImuLmfSESLWvjD3"
 
 local hwid = AnalyticsService:GetClientId()
 

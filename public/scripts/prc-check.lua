@@ -85,7 +85,7 @@ Tabs.Custom:Toggle({
                 while AntiPRC_ToggleActive do
                     for _, plr in ipairs(game:GetService("Players"):GetPlayers()) do
                         if plr ~= game:GetService("Players").LocalPlayer then
-                            local isPRC = plr:FindFirstChild("IsGameMod") and plr.IsPRC.Value
+                            local isPRC = plr:FindFirstChild("IsPRC") and plr.IsPRC.Value
                             if isPRC and not SeenPRCMods[plr] then
                                 SeenPRCMods[plr] = true
                                 HandlePRC(plr)

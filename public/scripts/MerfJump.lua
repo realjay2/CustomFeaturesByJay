@@ -15,10 +15,9 @@ local backflipMode = false
 local activeGyros = {}
 local activeJumps = {}
 
--- Flags to ignore initial toggle callbacks
 local carJumpToggleInitialized = false
 local backflipToggleInitialized = false
-local carJumpEnabled = false -- toggle state
+local carJumpEnabled = false
 
 local function getVehicle()
     local char = Player.Character
@@ -46,7 +45,7 @@ local function cleanupGyro(vehicle)
 end
 
 local function makeCarJump()
-    if not carJumpEnabled then return end -- stop if toggle is off
+    if not carJumpEnabled then return end
 
     local currentTime = tick()
     if currentTime - lastJumpTime < cooldown then
@@ -244,7 +243,6 @@ Tabs.Custom:Toggle({
     Value = false,
     Callback = function(state)
         if not carJumpEnabled then
-            -- ignore backflip toggle if main toggle is off
             backflipMode = false
             return
         end

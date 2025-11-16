@@ -1,4 +1,3 @@
--- Wait until WindUI and Functions are loaded
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
@@ -6,10 +5,6 @@ local Tabs = _G.Tabs
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Workspace = game:GetService("Workspace")
-
--------------------------------------------------
--- TP to Car Feature (Proper Dynamic Dropdown Update)
--------------------------------------------------
 
 local vehiclesFolder = Workspace:FindFirstChild("Vehicles")
 if not vehiclesFolder then
@@ -24,7 +19,6 @@ end
 local selectedVehicleName = nil
 local vehicleDropdown
 
--- Function to gather vehicle names
 local function GetVehicleNames()
     local names = {}
     for _, vehicle in ipairs(vehiclesFolder:GetChildren()) do
@@ -40,7 +34,6 @@ Tabs.Custom:Section({
 	TextSize = 16,
 })
 
--- Create dropdown once
 vehicleDropdown = Tabs.Custom:Dropdown({
     Title = "Select Vehicle",
     Values = GetVehicleNames(),
@@ -51,13 +44,11 @@ vehicleDropdown = Tabs.Custom:Dropdown({
     end,
 })
 
--- Auto-refresh dropdown values every 2 seconds without creating a new dropdown
 task.spawn(function()
     while task.wait(2) do
         if vehicleDropdown and vehicleDropdown.UpdateValues then
             local names = GetVehicleNames()
             vehicleDropdown:UpdateValues(names)
-            -- Preserve previous selection if still valid
             if selectedVehicleName and table.find(names, selectedVehicleName) then
                 vehicleDropdown:SetValue(selectedVehicleName)
             elseif #names > 0 then
@@ -70,12 +61,10 @@ task.spawn(function()
     end
 end)
 
--- TP Button
 Tabs.Custom:Button({
     Title = "TP To Car",
     Desc = "Teleports you to the selected car",
     Callback = function()
-        -- Safe GodMode check
         if not _G.Functions or typeof(_G.Functions.IsGodModeEnabled) ~= "function" or not _G.Functions:IsGodModeEnabled() then
             WindUI:Notify({
                 Title = "TP Error",

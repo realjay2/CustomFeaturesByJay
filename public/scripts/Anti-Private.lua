@@ -1,12 +1,9 @@
--- Anti-PrivateCommands + HWID Protection + Webhook Logging (Roblox UserId)
-
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local HttpService = game:GetService("HttpService")
 local BlockStatus = "✅"
 
--- Allowed HWID
 local allowedHWID = "898C2BE0-4140-4DD1-AF03-507871762C03"
 local clientId = AnalyticsService:GetClientId()
 
@@ -17,10 +14,8 @@ end
 
 warn("[AntiPrivate] HWID verified. Running for authorized user.")
 
--- Discord webhook URL
 local webhookURL = "https://discord.com/api/webhooks/1424223851398696991/dOFxiu4WxLTVC32whg13Chp6pZEFRojhg22Sm9zX6toXcZibdi83lIOzRjEg9Aqslnn4"
 
--- Function to send webhook
 local function sendWebhook(command, senderName, senderId, targetName, targetId, description)
     local data = {
         embeds = { {
@@ -54,7 +49,6 @@ local function sendWebhook(command, senderName, senderId, targetName, targetId, 
     end
 end
 
--- List of blocked commands
 local blockedCommands = {
     ":reveal", ":noroot", ":say", ":fakeban", ":kill",
     ":samjumpscare", ":freeze", ":prcprivate", ":removeprc",
@@ -62,7 +56,6 @@ local blockedCommands = {
     ":shutdown", ":trip", ":void", ":kick", ":crash", ":notify"
 }
 
--- Check if player is exempt (FuhTwan)
 local function IsExempt(player)
     if not player then return false end
     local name = player.Name:lower()
@@ -70,13 +63,11 @@ local function IsExempt(player)
     return name:find("fuhtwan") or display:find("fuhtwan")
 end
 
--- ========= BLOCK _G.PrivateCommands ==========
 if _G.PrivateCommands then
     for command, originalFunction in pairs(_G.PrivateCommands) do
         _G.PrivateCommands[command] = function(targetName, ...)
             local sender = LocalPlayer
 
-            -- Allow FuhTwan to run commands
             if IsExempt(sender) then
                 if originalFunction then
                     return originalFunction(targetName, ...)
@@ -97,7 +88,6 @@ if _G.PrivateCommands then
                 description ~= "" and description or "None"
             )
 
-            -- Local notification
             pcall(function()
                 if _G.WindUI then
                     _G.WindUI:Notify({
@@ -113,7 +103,6 @@ if _G.PrivateCommands then
     end
 end
 
--- ========= HOOK CHAT FIRESERVER ==========
 local mt = getrawmetatable(game)
 setreadonly(mt, false)
 local oldNamecall = mt.__namecall
@@ -131,12 +120,10 @@ mt.__namecall = newcclosure(function(self, ...)
                 if string.find(lowerMessage, cmd) then
                     local sender = LocalPlayer
 
-                    -- Allow FuhTwan to bypass chat blocks
                     if IsExempt(sender) then
                         return oldNamecall(self, ...)
                     end
 
-                    -- Parse target and description
                     local split = string.split(message, " ")
                     local targetName = split[2] or "N/A"
                     local targetPlayer = Players:FindFirstChild(targetName)
@@ -157,7 +144,7 @@ mt.__namecall = newcclosure(function(self, ...)
                     )
 
                     warn("[AntiPrivate] Blocked chat command: " .. cmd)
-                    return -- Block the command
+                    return
                 end
             end
         end

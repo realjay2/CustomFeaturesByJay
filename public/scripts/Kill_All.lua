@@ -7,13 +7,13 @@ local Functions = _G.Functions
 -------------------------------------------------
 
 Tabs.Custom:Section({
-	Title = "Auto Arrest",
+	Title = "Kill All",
 	TextSize = 16,
 })
 
 Tabs.Custom:Toggle({
-    Title = "Auto Arrest",
-    Desc = "Auto Arrest V2 (Soon)",
+    Title = "Kill All",
+    Desc = "I have the method, but Dorblx said I cant release :(",
     Default = false,
     Locked = true,
     Callback = function(value)

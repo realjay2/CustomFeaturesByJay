@@ -1,11 +1,9 @@
--- Wait until WindUI and Functions are loaded
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
 local Tabs   = _G.Tabs
 local Functions = _G.Functions
 
---// DesyncLib
 local DesyncLib = {
     ServerPos = CFrame.new(0, 0, 0),
     Enabled = false,
@@ -25,9 +23,6 @@ local Desync = {
     Sent = CFrame.new()
 }
 
--------------------------------------------------
--- Core Desync logic
--------------------------------------------------
 RunService:BindToRenderStep("Desync", Enum.RenderPriority.First.Value, function()
     if not DesyncLib.Enabled or not RootPart or not Head then return end
 
@@ -60,9 +55,6 @@ RunService.Heartbeat:Connect(function()
     end
 end)
 
--------------------------------------------------
--- DesyncLib methods
--------------------------------------------------
 function DesyncLib:SetServerPos(Position)
     if not Position then return false, "No position" end
     if typeof(Position) == "Vector3" then
@@ -79,11 +71,8 @@ function DesyncLib:Set(Value)
     DesyncLib.Enabled = Value
 end
 
--------------------------------------------------
--- UI Toggle
--------------------------------------------------
 local DesyncToggle
-local firstExecution = true  -- prevent OFF notify on initial load
+local firstExecution = true
 
 Tabs.Custom:Section({
     Title = "Player Desync",
@@ -97,9 +86,6 @@ DesyncToggle = Tabs.Custom:Toggle({
 
     Callback = function(state)
 
-        -------------------------------------------------
-        -- Check for TP Check requirement
-        -------------------------------------------------
         if state and not Functions:IsGodModeEnabled() then
             WindUI:Notify({
                 Title = "Desync Error",
@@ -109,7 +95,6 @@ DesyncToggle = Tabs.Custom:Toggle({
 
             DesyncLib:Set(false)
 
-            -- Force UI toggle back off
             task.defer(function()
                 if DesyncToggle and DesyncToggle.SetValue then
                     DesyncToggle:SetValue(false)
@@ -119,14 +104,8 @@ DesyncToggle = Tabs.Custom:Toggle({
             return
         end
 
-        -------------------------------------------------
-        -- Apply Desync state
-        -------------------------------------------------
         DesyncLib:Set(state)
 
-        -------------------------------------------------
-        -- Notifications (with no OFF notify at load)
-        -------------------------------------------------
         if state then
             WindUI:Notify({
                 Title = "Desync Enabled",

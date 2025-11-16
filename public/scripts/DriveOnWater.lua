@@ -38,7 +38,6 @@ Tabs.Custom:Toggle({
 
     Callback = function(value)
         if value then
-            -- Recreate the 3-platform setup from your old working code
             waterPlatforms[1] = createPlatform(Vector3.new(300, -15, 3000), Vector3.new(1634, -15, -9000), 0.5)
             waterPlatforms[2] = createPlatform(Vector3.new(300, -15, 3000), Vector3.new(1634, -15.5, -3000), 0.5)
             waterPlatforms[3] = createPlatform(Vector3.new(300, -15, 0), Vector3.new(1634, -15.5, -3000), 0.5)

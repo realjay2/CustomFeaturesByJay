@@ -5,6 +5,7 @@ local Tabs = _G.Tabs
 local Functions = _G.Functions
 
 -------------------------------------------------
+
 Tabs.Custom:Section({
 	Title = "API Grabber",
 	TextSize = 16,

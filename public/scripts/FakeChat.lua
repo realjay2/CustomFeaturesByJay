@@ -1,14 +1,9 @@
--- Wait until WindUI and Functions are loaded
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
 local Tabs = _G.Tabs
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-
--------------------------------------------------
--- Fake Chat V2
--------------------------------------------------
 
 Tabs.Custom:Section({
     Title = "Fake Chat V2",
@@ -19,7 +14,6 @@ _G.FakeChatEnabled = false
 _G.FakeChatUser = LocalPlayer.Name
 _G.FakeChatLooping = false
 
--- Function to noclip entire character
 local function NoclipCharacter(character)
     if character then
         for _, part in pairs(character:GetDescendants()) do
@@ -30,7 +24,6 @@ local function NoclipCharacter(character)
     end
 end
 
--- Toggle FakeChat (also TP to user and follow while enabled)
 Tabs.Custom:Toggle({
     Title = "Toggle FakeChat",
     Desc = "Teleport to person, and speak for them. (Requires Invisibility)",
@@ -39,7 +32,6 @@ Tabs.Custom:Toggle({
         _G.FakeChatEnabled = value
 
         if value then
-            -- REQUIREMENTS: BOTH invisibility AND disable TP check must be true
             if not (_G.Invisibility == true or (_G.Functions and _G.Functions:IsGodModeEnabled())) then
                 WindUI:Notify({
                     Title = "TP Error",
@@ -50,7 +42,6 @@ Tabs.Custom:Toggle({
                 return
             end
 
-            -- VALIDATION
             if not _G.FakeChatUser or _G.FakeChatUser == "" then
                 WindUI:Notify({
                     Title = "TP Error",
@@ -95,7 +86,6 @@ Tabs.Custom:Toggle({
                 return
             end
 
-            -- Start looping follow & noclip
             if not _G.FakeChatLooping then
                 _G.FakeChatLooping = true
                 task.spawn(function()
@@ -105,12 +95,10 @@ Tabs.Custom:Toggle({
                         local target = Players:FindFirstChild(_G.FakeChatUser)
                         local targetRoot = target and target.Character and target.Character:FindFirstChild("HumanoidRootPart")
                         if char and root and targetRoot then
-                            -- Perfect inside body
                             root.CFrame = targetRoot.CFrame
-                            -- Full-body noclip
                             NoclipCharacter(char)
                         end
-                        task.wait(0.03) -- smooth follow
+                        task.wait(0.03)
                     end
                     _G.FakeChatLooping = false
                 end)
@@ -125,7 +113,6 @@ Tabs.Custom:Toggle({
     end
 })
 
--- FakeChat Username input
 Tabs.Custom:Input({
     Title = "FakeChat User",
     Desc = "User to FakeChat",

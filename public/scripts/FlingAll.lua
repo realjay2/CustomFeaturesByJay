@@ -1,4 +1,3 @@
--- Wait until WindUI and Functions are loaded
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
@@ -9,25 +8,18 @@ local LocalPlayer = Players.LocalPlayer
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
--------------------------------------------------
--- Fling All with Team + Moderator + PRC Ignore Dropdown
--------------------------------------------------
-
 _G.TPToAllPlayersEnabled = false
-local prevState = false -- Track previous toggle state
-local IgnoredOptions = {} -- selected teams/moderators/PRC to ignore
+local prevState = false
+local IgnoredOptions = {}
 local OptionsList = { "Civilian", "DOT", "Fire", "Police", "Sherrif" }
 
--- Always include Moderator
 local PrivateServers = ReplicatedStorage:FindFirstChild("PrivateServers")
 if PrivateServers and PrivateServers:FindFirstChild("Info") then
     table.insert(OptionsList, "Moderator")
 end
 
--- Always include PRC Mod
 table.insert(OptionsList, "PRC Mod")
 
--- Function to check if player is a moderator
 local function IsModerator(plr)
     if plr:FindFirstChild("IsMod") then
         return plr.IsMod.Value
@@ -35,7 +27,6 @@ local function IsModerator(plr)
     return false
 end
 
--- Function to check if player is a PRC Mod
 local function IsPRCMod(plr)
     if plr:FindFirstChild("IsPRC") then
         return plr.IsPRC.Value
@@ -43,7 +34,6 @@ local function IsPRCMod(plr)
     return false
 end
 
--- Function to gather all valid players to TP to
 local function GetValidPlayers()
     local list = {}
     for _, plr in ipairs(Players:GetPlayers()) do
@@ -52,17 +42,14 @@ local function GetValidPlayers()
             local isMod = IsModerator(plr)
             local isPRC = IsPRCMod(plr)
 
-            -- Skip if player is a moderator and "Moderator" is selected
             if IgnoredOptions["Moderator"] and isMod then
                 continue
             end
 
-            -- Skip if player is a PRC Mod and "PRC Mod" is selected
             if IgnoredOptions["PRC Mod"] and isPRC then
                 continue
             end
 
-            -- Skip ignored teams
             if IgnoredOptions[teamName] then
                 continue
             end
@@ -73,7 +60,6 @@ local function GetValidPlayers()
     return list
 end
 
--- TP Loop
 local function TPToAllPlayersLoop()
     while _G.TPToAllPlayersEnabled do
         local godmodeEnabled = Functions:IsGodModeEnabled()
@@ -113,7 +99,7 @@ local function TPToAllPlayersLoop()
             end
         end
 
-        task.wait(0.5) -- loop delay to continuously update
+        task.wait(0.5)
     end
 end
 
@@ -122,9 +108,6 @@ Tabs.Custom:Section({
     TextSize = 16,
 })
 
--------------------------------------------------
--- Team + Moderator/PRC Ignore Dropdown
--------------------------------------------------
 Tabs.Custom:Dropdown({
     Title = "Ignore Options",
     Values = OptionsList,
@@ -138,9 +121,6 @@ Tabs.Custom:Dropdown({
     end,
 })
 
--------------------------------------------------
--- Toggle button (Trolling Tab)
--------------------------------------------------
 Tabs.Custom:Toggle({
     Title = "Fling All",
     Desc = "Automatically teleport to every player [Disable TP Check / WalkFling required]",

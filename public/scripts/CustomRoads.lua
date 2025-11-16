@@ -1,14 +1,11 @@
--- Wait until WindUI and Functions are loaded
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
 local Tabs = _G.Tabs
 local Functions = _G.Functions
 
--- prevents OFF notification on execution
 local firstExecution = true
 
--------------------------------------------------
 Tabs.Custom:Section({
     Title = "Upgraded Roads",
     TextSize = 16,
@@ -79,9 +76,6 @@ Tabs.Custom:Toggle({
             return changedNow
         end
 
-        -------------------------------------------------
-        -- ENABLED
-        -------------------------------------------------
         if enabled then
             ApplyBetterRoads()
 
@@ -101,9 +95,6 @@ Tabs.Custom:Toggle({
             end
             _G.BetterRoadsEnabled = true
 
-        -------------------------------------------------
-        -- DISABLED
-        -------------------------------------------------
         else
             _G.BetterRoadsEnabled = false
 
@@ -121,7 +112,6 @@ Tabs.Custom:Toggle({
 
             _G.OriginalPartData = {}
 
-            -- prevent OFF notify on first execution
             if not firstExecution then
                 WindUI:Notify({
                     Title = "Better Roads",
@@ -131,7 +121,6 @@ Tabs.Custom:Toggle({
             end
         end
 
-        -- after first toggle fired once, enable OFF notifies
         firstExecution = false
     end,
 })

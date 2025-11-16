@@ -87,7 +87,6 @@ Tabs.Custom:Section({
     Title = "Misc Features"
 })
 
-loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/API-Grabber.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/AssetStealer.lua"))()
 
     WindUI:Notify({

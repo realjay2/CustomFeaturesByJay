@@ -61,6 +61,7 @@ Tabs.Custom:Section({
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/FlingAll.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Kill-All.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Bring-Car.lua"))()
+loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/SeatScript.lua"))()
 
 Tabs.Custom:Section({
     Title = "Visual Features"

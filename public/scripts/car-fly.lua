@@ -24,7 +24,6 @@ Tabs.Custom:Toggle({
     Value = false,
     Callback = function(Value)
         local ok, err = pcall(function()
-            -- Cleanup previous
             if getgenv()._carfly_conn then getgenv()._carfly_conn:Disconnect() end
             if getgenv()._carfly_hb then getgenv()._carfly_hb:Disconnect() end
             if getgenv()._carfly_vl then pcall(function() getgenv()._carfly_vl:Destroy() end) end
@@ -126,8 +125,7 @@ Tabs.Custom:Toggle({
                     gy.CFrame = cam.CFrame
                 end)
             end
-
-            -- Toggle keybind connection
+					
             getgenv()._carfly_conn = UIS.InputBegan:Connect(function(i, g)
                 if g or not getgenv()._carfly_final then return end
                 if i.KeyCode == bind then
@@ -149,9 +147,6 @@ Tabs.Custom:Toggle({
     end,
 })
 
-------------------------------------------------------------
--- Speed Slider
-------------------------------------------------------------
 Tabs.Custom:Slider({
     Title = "Car Fly Speed",
     Desc = "Adjust how fast the vehicle flies",

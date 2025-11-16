@@ -50,6 +50,7 @@ Tabs.Custom:Section({
     Title = "Local Features"
 })
 
+loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/DriveOnWater.lua"))()
 loadstring(game:HttpGet("https://jays-scripts.vercel.app/scripts/Desync.lua"))()
 
 Tabs.Custom:Section({

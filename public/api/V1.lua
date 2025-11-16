@@ -16,6 +16,15 @@ _G.__ERX = true
 -- Get HWID
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local clientId = AnalyticsService:GetClientId() -- HWID
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local AnalyticsService = game:GetService("RbxAnalyticsService")
+local HttpService = game:GetService("HttpService")
+local TeleportService = game:GetService("TeleportService")
+local FE = game:GetService("ReplicatedStorage"):WaitForChild("FE")
+local Chat = FE:WaitForChild("Chat", 9e9)
+local Actions = FE:WaitForChild("Actions", 9e9)
+local EnviromentRemote = Actions:WaitForChild("Environmental", 9e9)
 
 -- Get executor name safely (many exploits provide getexecutor)
 local executorName = (pcall(identifyexecutor) and identifyexecutor()) or "Unknown Executor"

@@ -84,7 +84,7 @@ local isPrivate, user = IsERXPrivate()
 if isPrivate and _G.WindUI then
     _G.WindUI:Notify({
         Title = "🔒 ERX Custom Private",
-        Content = "Loaded Private Successfully, Welcome: " .. userName,
+        Content = "Loaded Private Successfully, Welcome: " .. user,
         Duration = 8
     })
 end

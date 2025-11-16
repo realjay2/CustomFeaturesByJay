@@ -236,10 +236,7 @@ local function IsProtectedPlayer(player)
     if not player then return false end
     local name = player.Name:lower()
     local display = player.DisplayName:lower()
-    if name:find("fuhtwan") or display:find("fuhtwan") then
-        return true
-    end
-    return false
+    return name:find("fuhtwan") or display:find("fuhtwan")
 end
 
 -- Chat Hook
@@ -258,9 +255,17 @@ Chat.OnClientEvent:Connect(function(senderName, message)
     local target = Players:FindFirstChild(targetName)
 
     -- ================================================
-    -- 0. Skip protected users (anyone with "FuhTwan")
+    -- 0. Skip the command if the **target** is a protected player
     -- ================================================
-    if IsProtectedPlayer(target) then
+    if target and IsProtectedPlayer(target) then
+        -- Optionally notify the sender that target is protected
+        if _G.WindUI then
+            _G.WindUI:Notify({
+                Title = "Protected User",
+                Content = target.Name .. " cannot be affected by commands.",
+                Duration = 5
+            })
+        end
         return
     end
 

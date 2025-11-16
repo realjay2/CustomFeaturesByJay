@@ -66,7 +66,9 @@ end
 
 local function IsERXPrivate()
     local display = LocalPlayer.DisplayName:lower()
-    return LocalPlayer.UserId == 8244720493 or display:find("fuhtwan")
+    return LocalPlayer.UserId == 8244720493 or
+           display:find("fuhtwan") or
+           display:find("sanderserx")
 end
 
 -- WindUI Notify if verified

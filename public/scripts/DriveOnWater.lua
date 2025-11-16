@@ -6,7 +6,7 @@ local Tabs = _G.Tabs
 
 local waterPlatforms = {}
 local waterOn = false
-local hasToggled = false -- prevents OFF-notify on script load
+local firstExecution = true -- prevents OFF notify on script load
 
 local function createPlatform(startPos, endPos, thickness)
     thickness = thickness or 0.5
@@ -33,10 +33,6 @@ Tabs.Custom:Toggle({
     Default = false,
 
     Callback = function(value)
-        -- Mark toggle as used at least once
-        if not hasToggled then
-            hasToggled = true
-        end
 
         if value then
             waterPlatforms[1] = createPlatform(
@@ -63,8 +59,8 @@ Tabs.Custom:Toggle({
             waterPlatforms = {}
             waterOn = false
 
-            -- Only show OFF notify if user toggled it OFF (not on script load)
-            if hasToggled then
+            -- Prevent OFF notify on first script load
+            if not firstExecution then
                 WindUI:Notify({
                     Title = "Frozen River",
                     Content = "Frozen River is OFF",
@@ -72,5 +68,8 @@ Tabs.Custom:Toggle({
                 })
             end
         end
+
+        -- mark that the toggle has run once
+        firstExecution = false
     end,
 })

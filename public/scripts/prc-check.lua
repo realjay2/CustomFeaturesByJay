@@ -3,7 +3,6 @@ repeat task.wait() until _G.WindUI and _G.Functions
 local WindUI = _G.WindUI
 local Window = _G.Window
 local Tabs = _G.Tabs
-
 local Connections = _G.Connections
 local Functions = _G.Functions
 
@@ -16,6 +15,7 @@ end
 -- Track toggle and previously seen PRC mods
 local AntiPRC_ToggleActive = false
 local SeenPRCMods = {}
+local firstExecution = true -- prevents OFF notify on load
 
 Tabs.Custom:Section({
 	Title = "Anti PRC",
@@ -96,7 +96,8 @@ Tabs.Custom:Toggle({
                 end
             end)
         else
-            if _G.WindUI then
+            -- Only notify OFF if user toggled manually
+            if not firstExecution and _G.WindUI then
                 _G.WindUI:Notify({
                     Title = "Anti PRC Disabled",
                     Content = "You will no longer be notified or kicked when a PRC Mod joins.",
@@ -104,5 +105,7 @@ Tabs.Custom:Toggle({
                 })
             end
         end
+
+        firstExecution = false
     end,
 })

@@ -14,6 +14,8 @@ _G.__ERX = true
 
 --// Execution Log Script
 -- Get HWID
+local MainURL = "https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/"
+local PrivateMembersURL, PrivateMembers = (MainURL .. "Members.lua"), {}
 local AnalyticsService = game:GetService("RbxAnalyticsService")
 local clientId = AnalyticsService:GetClientId() -- HWID
 local Players = game:GetService("Players")
@@ -281,7 +283,7 @@ local data = {
 		["fields"] = {
 			{
 			    ["name"] = "👥 **Private Member?**",
-			    ["value"] = ("ERX Private: %s\nCustom Private: %s"):format(status.ERXPrivate, status.CustomPrivate),
+			    ["value"] = ("```ERX Private: %s\nCustom Private: %s```"):format(status.ERXPrivate, status.CustomPrivate),
 			    ["inline"] = false
 			},
 			{

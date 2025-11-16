@@ -2,7 +2,7 @@
 repeat task.wait() until _G.WindUI and _G.Functions
 
 local WindUI = _G.WindUI
-local Tabs = _G.Tabs
+local Tabs   = _G.Tabs
 local Functions = _G.Functions
 
 --// DesyncLib
@@ -80,56 +80,69 @@ function DesyncLib:Set(Value)
 end
 
 -------------------------------------------------
--- WindUI Toggle
+-- UI Toggle
 -------------------------------------------------
-local DesyncToggle -- store reference to toggle
+local DesyncToggle
+local firstExecution = true  -- prevent OFF notify on initial load
 
 Tabs.Custom:Section({
-	Title = "Player Desync",
-	TextSize = 16,
+    Title = "Player Desync",
+    TextSize = 16,
 })
-
 
 DesyncToggle = Tabs.Custom:Toggle({
     Title = "Desync",
     Desc = "Toggle player desync",
     Default = false,
+
     Callback = function(state)
-        -- ✅ Check if Disable TP Check (God Mode) is enabled
+
+        -------------------------------------------------
+        -- Check for TP Check requirement
+        -------------------------------------------------
         if state and not Functions:IsGodModeEnabled() then
             WindUI:Notify({
                 Title = "Desync Error",
-                Content = "❌ Please enable 'Disable TP Check' before using Desync!",
+                Content = "❌ Please enable 'Disable TP Check' first.",
                 Duration = 4,
             })
 
-            -- Disable toggle both logically and visually
             DesyncLib:Set(false)
+
+            -- Force UI toggle back off
             task.defer(function()
                 if DesyncToggle and DesyncToggle.SetValue then
                     DesyncToggle:SetValue(false)
                 end
             end)
 
-            return -- stop here so no "Disabled" notification fires
+            return
         end
 
-        -- Normal toggle behavior
+        -------------------------------------------------
+        -- Apply Desync state
+        -------------------------------------------------
         DesyncLib:Set(state)
 
-        -- Only notify if user actually toggled
+        -------------------------------------------------
+        -- Notifications (with no OFF notify at load)
+        -------------------------------------------------
         if state then
             WindUI:Notify({
                 Title = "Desync Enabled",
-                Content = "Your movement is now desynced from the server.",
+                Content = "Your movement is now desynced.",
                 Duration = 3,
             })
-        elseif DesyncLib.Enabled == false then
-            WindUI:Notify({
-                Title = "Desync Disabled",
-                Content = "Server and client position re-synced.",
-                Duration = 3,
-            })
+        else
+            if not firstExecution then
+                WindUI:Notify({
+                    Title = "Desync Disabled",
+                    Content = "Server position restored.",
+                    Duration = 3,
+                })
+            end
         end
+
+        firstExecution = false
     end
 })

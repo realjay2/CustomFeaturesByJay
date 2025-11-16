@@ -3,10 +3,7 @@
     {
       "src": ".*\\.lua$",
       "status": 403,
-      "headers": {
-        "Content-Type": "text/plain"
-      },
-      "body": "Access Denied"
+      "dest": "/"
     }
   ],
   "headers": [

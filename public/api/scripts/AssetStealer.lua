@@ -4,7 +4,7 @@ local Tabs = _G.Tabs
 local Functions = _G.Functions
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local GITHUB_RAW = "https://coreapi.online/asset-stealer.lua"
+local GITHUB_RAW = "https://coreapi.online/AssetStealer.lua"
 
 Tabs.Custom:Section({
     Title = "Server Assets",

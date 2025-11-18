@@ -1,3 +1,7 @@
+repeat task.wait() until _G.WindUI and _G.Tabs and _G.Functions
+local WindUI = _G.WindUI
+local Tabs = _G.Tabs
+local Functions = _G.Functions
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer

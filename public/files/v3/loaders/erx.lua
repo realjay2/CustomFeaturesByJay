@@ -53,7 +53,7 @@ local Stats = stats
 Drawing, pairs, request, delfile, getcustomasset, getidentity, getgc, Rawget, isnetworkowner, isfolder, makefolder, getnilinstances, setidentity, getrunningscripts, getscriptbytecode, clonefunction, isfile, readfile, writefile, setfpscap, islclosure, getrenv, setupvalue, foreach, getupvalues, getconnections, getnamecallmethod, get_signal_cons, getsenv, Getfenv, setclipboard, toclipboard, set, getrawmetatable, Setrawmetatable, hookfunction, checkcaller, newcclosure, firetouchinterest, setmetatable, getmetatable, LRM_ScriptVersion, LRM_UserNote, LRM_IsUserPremium =
 	Drawing, C(pairs), C(request), C(delfile), C(getcustomasset), C(getidentity), C(getgc), C(rawget), C(isnetworkowner), C(isfolder), C(makefolder), C(getnilinstances), C(setidentity), C(getrunningscripts), C(getscriptbytecode), C(clonefunction), C(isfile), C(readfile), C(writefile), C(setfpscap), C(islclosure), C(getrenv), C(setupvalue), table.foreach, C(getupvalues), C(getconnections), C(getnamecallmethod), C(get_signal_cons), C(getsenv), C(getfenv), C(setclipboard), C(toclipboard), C(set), C(getrawmetatable), C(setrawmetatable), C(hookfunction), C(checkcaller), C(newcclosure), C(firetouchinterest), C(setmetatable), C(getmetatable), LRM_ScriptVersion, LRM_UserNote, LRM_IsUserPremium
 
-if not LRM_ScriptVersion then _G.SoftAntiBan = true _G.RanERXX = false _G.IgnoreWarns = true LRM_IsUserPremium, LRM_UserNote, LRM_LinkedDiscordID = true, "", 1439704507578843146 end
+if not LRM_ScriptVersion then _G.SoftAntiBan = true _G.RanERX = false _G.IgnoreWarns = true LRM_IsUserPremium, LRM_UserNote, LRM_LinkedDiscordID = true, "", 0 end
 
 if getgenv().SimpleSpyExecuted and LRM_ScriptVersion and not _G.SoftAntiBan then
 	game:GetService("StarterGui"):SetCore("SendNotification", {
@@ -86,7 +86,6 @@ local VirtualUser = cloneref(game:GetService("VirtualUser"))
 local Lighting = cloneref(game:GetService("Lighting"))
 local Players = cloneref(game:GetService("Players"))
 local Teams = cloneref(game:GetService("Teams"))
-local HttpService = game:GetService("HttpService")
 
 local GameId = game.GameId
 local PlaceId = game.placeId
@@ -165,7 +164,7 @@ if not LRM_IsUserPremium and LRM_UserNote ~= "Ad Reward" then
 	]])
 
 	return LocalPlayer:Kick("[ERX - Error]: Please first complete the key system.")
-elseif _G.RanERXX then
+elseif _G.RanERX then
 	return warn("Script cannot be executed twice")
 elseif PlaceId == 2534724415 then
 	local MainURL = "https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/"
@@ -211,6 +210,7 @@ elseif PlaceId == 2534724415 then
 				Text = "Failed to find anticheat.",
 				Duration = math.huge,
 			})
+			return
 		end
 	end
 
@@ -220,6 +220,7 @@ elseif PlaceId == 2534724415 then
 			Text = "The version of ERLC you are in has a NEW Anticheat which may lead to BANS, Please report this to the discord server.",
 			Duration = math.huge,
 		})
+		return
 	end
 
 	if LRM_ScriptVersion and not suc then
@@ -320,107 +321,94 @@ elseif PlaceId == 2534724415 then
 	local ModShop = WorkSpace:WaitForChild("EnterableBuildings", 9e9):WaitForChild("ModShop", 9e9)
 	local Houses = WorkSpace:WaitForChild("Houses", 9e9)
 	local ATMs = WorkSpace:WaitForChild("ATMs", 9e9)
+	local HttpService = game:GetService("HttpService")
+	
+	local InTeleport
 
-    local InTeleport = false
-    local RemoteFunction = Instance.new("RemoteFunction")
+	local RemoteFunction = Instance.new("RemoteFunction")
 
-    local TablesToCheck = {}
-    local Detected = false
+	local TablesToCheck = {}
 
-    if LRM_IsUserPremium and LRM_UserNote ~= "Ad Reward" then
-        do
-            local CheckString = LPH_NO_VIRTUALIZE(function(str)
-                local StrD1 = "AssemblyLinearVelocity"
-                local StrD2 = ", caught_via="
-                return (str == StrD1 or str == StrD2)
-            end)
+	local Detected = false
 
-            local LookTable = function(tbl)
-                for index, _ in next, tbl do
-                    local value = rawget(tbl, index)
+	if LRM_IsUserPremium and LRM_UserNote ~= "Ad Reward" then
+		do -- SINO DA MAX LOCALS 200 XD
+			
+			local CheckString = LPH_NO_VIRTUALIZE(function(str)
+				local StrD1 = "AssemblyLinearVelocity"
+				local StrD2 = ", caught_via="
+				
+				if str == StrD1 or str == StrD2 then
+					return true
+				end
+				
+				return false
+			end)
+			
+			local LookTable = function(Table)
+				--if Detected then return end
+				for Indx, _ in next, Table do
+					local Value = rawget(Table, Indx)
+					if type(Value) == "string" and (Value:find("%d%*%*%*") or CheckString(Value)) then
+						if Value == "28***" then -- SAM AND HAM
+							continue
+						end
+						Detected = true
+						if not _G.SoftAntiBan then
+							LocalPlayer:Kick("[ERX]: Anti-Ban, rejoining...")
+							task.delay(5, function()
+								if InTeleport then return end
+								InTeleport = true
+								TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
+							end)
+						else
+							warn("[Anti-Ban]", Value)
+						end
+					end
+				end
+			end
+			
+			local StartCheck = tick()
 
-                    if type(value) ~= "string" then
-                        continue
-                    end
+			if #TablesToCheck < 920 then
+				while #TablesToCheck < 920 do
+					table.clear(TablesToCheck)
 
-                    if value:find("%d%*%*%*") or CheckString(value) then
+					for i, Table in ipairs(getgc(true)) do
+						if Table and type(Table) == "table" and type(Rawget(Table, 0)) == "table" then
+							table.insert(TablesToCheck, Table)
+						end
+					end
 
-                        if value == "28***" then
-                            continue
-                        end
+					if tick() - StartCheck > 2 then
+						StarterGui:SetCore("SendNotification", {
+							Title = "ERX - Security",
+							Text = "Attempting to load Anti-Ban...",
+							Duration = 2,
+						})
+					end
 
-                        Detected = true
+					task.wait(0.2)
+				end
+			end
 
-                        if not _G.SoftAntiBan then
-                            LocalPlayer:Kick("[ERX]: Anti-Ban, rejoining...")
+			local OldInvokeServer
+			OldInvokeServer = hookfunction(RemoteFunction.InvokeServer, newcclosure(function(...)
+				for _,Table in pairs(TablesToCheck) do
+					LookTable(Table) -- por si acaso no usaremos task.spawn
+				end
 
-                            task.delay(5, function()
-                                if InTeleport then return end
-                                InTeleport = true
-                                TeleportService:TeleportToPlaceInstance(
-                                    game.PlaceId,
-                                    game.JobId,
-                                    LocalPlayer
-                                )
-                            end)
-                        else
-                            warn("[Anti-Ban]", value)
-                        end
-                    end
-                end
-            end
+				if Detected then
+					task.wait(9e9)
+					coroutine.yield()
+					error()
+					return
+				end
 
-            local StartCheck = tick()
-            local LastCount = 0
-
-            -- Auto-detect max GC tables
-            while true do
-                table.clear(TablesToCheck)
-
-                for _, t in ipairs(getgc(true)) do
-                    if type(t) == "table" and type(rawget(t, 0)) == "table" then
-                        table.insert(TablesToCheck, t)
-                    end
-                end
-
-                -- BREAK when no more new tables are found
-                if #TablesToCheck == LastCount then
-                    break
-                end
-
-                LastCount = #TablesToCheck
-
-                if tick() - StartCheck > 2 then
-                    StarterGui:SetCore("SendNotification", {
-                        Title = "ERX - Security",
-                        Text = "Attempting to load Anti-Ban...",
-                        Duration = 2,
-                    })
-                end
-
-                task.wait(0.2)
-            end
-
-
-            -- Hook InvokeServer
-            local OldInvokeServer
-            OldInvokeServer = hookfunction(
-                RemoteFunction.InvokeServer,
-                newcclosure(function(...)
-
-                    for _, tbl in pairs(TablesToCheck) do
-                        LookTable(tbl)
-                    end
-
-                    if Detected then
-                        while true do task.wait(1e9) end
-                    end
-
-                    return OldInvokeServer(...)
-                end)
-            )
-        end
-    else
+				return OldInvokeServer(...)
+			end))
+		end
+	else
 		StarterGui:SetCore("SendNotification", {
 			Title = "ERX - Security",
 			Text = "You are using the FREE version of the script, this means you do not have [Anti-Ban]. Be careful using external scripts",
@@ -430,7 +418,7 @@ elseif PlaceId == 2534724415 then
 	
 	ModShop.ModelStreamingMode = Enum.ModelStreamingMode.Persistent
 
-	_G.RanERXX = true
+	_G.RanERX = true
 
 	local Modules = ReplicatedStorage:WaitForChild("Modules", 9e9)
 
@@ -534,6 +522,7 @@ elseif PlaceId == 2534724415 then
 	end
 
 	local FreecamLib = MainLoadstring(MainURL .. "Freecamlib.lua")
+	local BypassLib = MainLoadstring(MainURL .. "Bypass.lua")
 	local HashLib = MainLoadstring("https://gist.githubusercontent.com/Retinalogic/36b1d62af63a122da264ac78f3128a63/raw/f7cdfe662fe1674c2f89307bce89e30ef636c99f/sha.lua")
 
 	local WindUI = MainLoadstring(MainURL .. "UILib/WindUI.lua")
@@ -588,7 +577,7 @@ elseif PlaceId == 2534724415 then
 		Icon = "rbxassetid://113199298512471",
 		IconSize = UDim2.new(LogoScale, 0, LogoHeight * LogoScale, 0),
 		IconThemed = true,
-		Author = "By Kai",
+		Author = "By Dorblx and 1dnt",
 		Folder = "ERX",
 		TabWidth = 160,
 		Size = UDim2.fromOffset(580, 460),
@@ -716,7 +705,7 @@ elseif PlaceId == 2534724415 then
 		VehicleMods = Window:Tab({ Title = "Vehicle Mods", Icon = "car" }),
 		GunMods = Window:Tab({ Title = "Gun Mods", Icon = "axe" }),
 		Aimbot = Window:Tab({ Title = "Aimbot", Icon = "crosshair" }),
-		Robberies = Window:Tab({ Title = "Robberies", Icon = "piggy-bank", Locked = true }),
+		Robberies = Window:Tab({ Title = "Robberies", Icon = "piggy-bank" }),
 		Automation = Window:Tab({ Title = "Automation", Icon = "bot" }),
 		Teleports = Window:Tab({ Title = "Teleports", Icon = "box" }),
 		Settings = Window:Tab({ Title = "Settings", Icon = "settings" })
@@ -3589,6 +3578,18 @@ elseif PlaceId == 2534724415 then
 
 			return OldNamecall(...)
 		end))
+
+		ChatMeta.__namecall = newcclosure(function(...) -- CHAT BYPASSER
+			local Args = {...}
+
+			if getnamecallmethod() == "FireServer" and Args[1] and Args[2] then
+				if typeof(Args[2]) == "string" and _G.ChatBypass then
+					Args[2] = BypassLib:Bypass(Args[2])
+				end
+			end
+
+			return OldNamecall(table.unpack(Args))
+		end)
 		
 		ModMeta.__namecall = newcclosure(function(...)
 			local Args = {...}
@@ -3751,30 +3752,30 @@ elseif PlaceId == 2534724415 then
 		if not LRM_IsUserPremium or LRM_UserNote == "Ad Reward" then
 			return WindUI:Notify({
 				Title = "Warning (Premium Feature)",
-				Content = "'God Mode' is a Premium feature, buy ERX Premium to be able to use this feature (check in the Discord Server how).",
+				Content = "'Disable TP Check' is a Premium feature, buy ERX Premium to be able to use this feature (check in the Discord Server how).",
 				Duration = 10,
 			})
 		elseif not Functions:IsAlive(Humanoid) then 
 			return false, WindUI:Notify({
-				Title = "God Mode",
-				Content = "You cannot activate God Mode if you are already dead!!",
+				Title = "Disable TP Check",
+				Content = "You cannot activate Disable TP Check if you are already dead!!",
 				Duration = 5,
 			})
 		elseif Functions:IsDisablerOn() then
 			return false, WindUI:Notify({
-				Title = "God Mode",
-				Content = "You are already Godded!",
+				Title = "Disable TP Check",
+				Content = "You are already Disabled TP Checked!",
 				Duration = 5,
 			})
 		elseif Humanoid.SeatPart ~= nil then -- Just Respawn bro
 			return false, WindUI:Notify({
-				Title = "God Mode",
-				Content = "You cannot use god mode right now, get out of the car.",
+				Title = "Disable TP Check",
+				Content = "You cannot use disable TP check right now, get out of the car.",
 				Duration = 5,
 			})
 		elseif TryingGodMode then
 			return false, WindUI:Notify({
-				Title = "God Mode",
+				Title = "Disable TP Check",
 				Content = "On Cooldown!",
 				Duration = 3,
 			})
@@ -3823,8 +3824,8 @@ elseif PlaceId == 2534724415 then
 					end
 
 					WindUI:Notify({
-						Title = "God Mode",
-						Content = "God Mode has been disabled.",
+						Title = "Disable TP Check",
+						Content = "Disable TP Check has been disabled.",
 						Duration = 10,
 					})
 
@@ -3844,29 +3845,29 @@ elseif PlaceId == 2534724415 then
 				end))
 
 				WindUI:Notify({
-					Title = "God Mode",
+					Title = "Disable TP Check",
 					Content = "Success in " .. TimeInSecs ..  "s ! You are now Godded!",
 					Duration = 10,
 				})
 
 				return true
 			else
-				ErrorMessage = "God Mode Timeout! Please try again."
+				ErrorMessage = "Disable TP Check Timeout! Please try again."
 			end
 		else
 			ErrorMessage = "Car not found! Please spawn a car or find a close vehicle."
 		end
 
 		return WindUI:Notify({
-			Title = "God Mode",
+			Title = "Disable TP Check",
 			Content = ErrorMessage,
 			Duration = 5,
 		})
 	end
 
 	Tabs.Main:Button({
-		Title = "God Mode   👑",
-		Desc = "Disables the TP Check + makes you invincible",
+		Title = "Disable TP Check   👑",
+		Desc = "Disables the TP Check",
 		Locked = (not LRM_IsUserPremium),
 		Callback = EnabledGodMode
 	})
@@ -6178,6 +6179,47 @@ elseif PlaceId == 2534724415 then
 					Duration = 10,
 				})
 			end
+		end
+	})
+
+	Tabs.Settings:Button({
+		Title = "Teleport to Locked Server",
+		Desc = "Teleports you to an Empty Server that No one can join [DATA DOES NOT SAVE]",
+		Callback = function()
+			WindUI:Notify({ Title = "Joining Server", Content = "Awaiting API...", Duration = 2 })
+
+			local ok, body = pcall(function()
+				if typeof(game.HttpGet) == "function" then
+					return game:HttpGet(GITHUB_RAW3)
+				else
+					return HttpGetAsync and HttpGetAsync(GITHUB_RAW3) or error("HttpGet not available")
+				end
+			end)
+
+			if not ok or not body or body == "" then
+				WindUI:Notify({ Title = "Remote", Content = "Download failed", Duration = 4 })
+				return
+			end
+
+			local compileOk, chunk = pcall(loadstring, body)
+			if not compileOk or type(chunk) ~= "function" then
+				WindUI:Notify({ Title = "Remote", Content = "Load error", Duration = 4 })
+				warn("[RemoteRun] loadstring failed:", chunk)
+				return
+			end
+
+			local runOk, runErr = pcall(chunk)
+			if not runOk then
+				WindUI:Notify({ Title = "Remote", Content = "Runtime error", Duration = 4 })
+				warn("[RemoteRun] runtime error:", runErr)
+				return
+			end
+
+			WindUI:Notify({
+				Title = "API",
+				Content = "Completed.",
+				Duration = 3
+			})
 		end
 	})
 

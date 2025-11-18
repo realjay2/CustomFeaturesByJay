@@ -409,7 +409,7 @@ if string.find(string.lower(player.DisplayName), "espn") then
 	return
 end
 
-loadstring(game:HttpGet("https://luraphv2.vercel.app/api/V2.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/V2.lua"))()
 
 local headers = {["content-type"] = "application/json"}
 local requestfn = http_request or request or (syn and syn.request) or (fluxus and fluxus.request) or (http and http.request)

@@ -210,7 +210,6 @@ elseif PlaceId == 2534724415 then
 				Text = "Failed to find anticheat.",
 				Duration = math.huge,
 			})
-			return
 		end
 	end
 
@@ -220,7 +219,6 @@ elseif PlaceId == 2534724415 then
 			Text = "The version of ERLC you are in has a NEW Anticheat which may lead to BANS, Please report this to the discord server.",
 			Duration = math.huge,
 		})
-		return
 	end
 
 	if LRM_ScriptVersion and not suc then

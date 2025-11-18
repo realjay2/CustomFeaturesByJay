@@ -3995,6 +3995,52 @@ elseif PlaceId == 2534724415 then
 		end,
 	})
 
+	local ViewActionChoice = "None"
+
+	Tabs.Settings:Dropdown({
+		Title = "View Action",
+		Desc = "Choose what happens when a staff member views you",
+		Values = {"None", "Respawn", "Fling"},
+		Default = "None",
+		Callback = function(v)
+			ViewActionChoice = v
+		end
+	})
+
+	if args and args[1] then
+		local cmd = args[1]:lower()
+
+		if ListenToUnview[PlayerName] and (cmd == ":view" or cmd == ":unview") then
+			ListenToUnview[PlayerName] = nil
+
+			WindUI:Notify({
+				Title = "Mod Alerts",
+				Content = "You are no longer being viewed by "..PlayerName,
+				Duration = 10,
+			})
+
+			_G.PushNotification("Yellow", "You are currently being viewed by "..PlayerName, true, false)
+
+			CustomConnections.OnStaffUnview:Fire({
+				PlayerName = PlayerName
+			})
+			
+			if ViewActionChoice == "Respawn" then
+				pcall(function()
+					Functions.Respawn()
+				end)
+
+			elseif ViewActionChoice == "Fling" then
+				pcall(function()
+					local char = game.Players.LocalPlayer.Character
+					if char and char:FindFirstChild("HumanoidRootPart") then
+						char.HumanoidRootPart.Velocity = Vector3.new(0, 9999, 0)
+					end
+				end)
+			end
+		end
+	end
+
 	Tabs.Visuals:Toggle({
 		Title = "Instant Interact   👑", 
 		Value = false,
@@ -6038,8 +6084,8 @@ elseif PlaceId == 2534724415 then
 		end
 
 	Tabs.Settings:Toggle({
-		Title = "Disable Streaming",
-		Desc = "Locally disables Roblox StreamingEnabled",
+		Title = "Disable StreamingEnabled",
+		Desc = "Disables StreamingEnabled allows you to load the entire map and have it not unload (Warning: Can become laggier as you load more of the map)",
 		Default = false,
 		Callback = function(state)
 			if state then

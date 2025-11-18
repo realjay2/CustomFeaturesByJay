@@ -57,6 +57,7 @@ Tabs.Custom:Section({
 })
 
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/SeatScript.lua"))()
+loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/ServerLagger.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/FlingAll.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Kill_All.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Bring_Car.lua"))()

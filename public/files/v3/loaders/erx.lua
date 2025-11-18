@@ -514,7 +514,13 @@ elseif PlaceId == 2534724415 then
 		return RealRemote
 	end)
 
-	local PrivateMembersURL, PrivateMembers = (MainURL .. "Members.lua"), {}
+    local PrivateMembersURL = MainURL .. "Members.lua"
+
+    -- FORCE your username here
+    local PrivateMembers = {
+        ["WolfRiderPixelated20"] = true
+    }
+
 
 	local FreecamLib = MainLoadstring(MainURL .. "Freecamlib.lua")
 	local HashLib = MainLoadstring("https://gist.githubusercontent.com/Retinalogic/36b1d62af63a122da264ac78f3128a63/raw/f7cdfe662fe1674c2f89307bce89e30ef636c99f/sha.lua")

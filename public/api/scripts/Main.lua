@@ -1,7 +1,6 @@
 local version = "3.12"
 
 loadstring(game:HttpGet("https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/Bypass.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/No_ERX.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Delta.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/V1.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/ERX_Check.lua"))()
@@ -44,7 +43,6 @@ Tabs.Custom:Section({
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/FlingAll.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Kill_All.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Bring_Car.lua"))()
-loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/SeatScript.lua"))()
 
 Tabs.Custom:Section({
     Title = "Visual Features"

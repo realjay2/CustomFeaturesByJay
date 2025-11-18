@@ -5967,6 +5967,89 @@ elseif PlaceId == 2534724415 then
 		end,
 	})
 	
+		local Stats = game:GetService("Stats")
+		local Workspace = game:GetService("Workspace")
+		local RunService = game:GetService("RunService")
+
+		local ServerStatsItem = Stats
+			:WaitForChild("Network")
+			:WaitForChild("ServerStatsItem")
+
+		local StreamingEnabledLoop = nil
+		local StreamingPatchLoop = nil
+		local PreloadLoop = nil
+
+		local function DisableStreaming()
+			-- Unlock table
+			if setreadonly then
+				pcall(function()
+					setreadonly(ServerStatsItem, false)
+				end)
+			end
+
+			-- Force Stats.StreamingEnabled = false
+			StreamingEnabledLoop = task.spawn(function()
+				while true do
+					pcall(function()
+						ServerStatsItem.StreamingEnabled = false
+					end)
+					task.wait(0.1)
+				end
+			end)
+
+			-- Force Workspace streaming mode OFF
+			StreamingPatchLoop = task.spawn(function()
+				while true do
+					pcall(function()
+						Workspace.StreamingEnabled = false
+						Workspace.StreamingPauseMode = Enum.StreamingPauseMode.Disabled
+					end)
+					task.wait(0.1)
+				end
+			end)
+
+			-- Preloader: forces streamed parts to actually load
+			PreloadLoop = task.spawn(function()
+				while true do
+					for _, obj in ipairs(Workspace:GetDescendants()) do
+						if obj:IsA("BasePart") then
+							obj:GetPropertyChangedSignal("Position"):Wait()
+						end
+					end
+					task.wait(1)
+				end
+			end)
+		end
+
+		local function EnableStreaming()
+			-- Kill loops
+			if StreamingEnabledLoop then task.cancel(StreamingEnabledLoop) end
+			if StreamingPatchLoop   then task.cancel(StreamingPatchLoop)   end
+			if PreloadLoop          then task.cancel(PreloadLoop)          end
+
+			StreamingEnabledLoop = nil
+			StreamingPatchLoop = nil
+			PreloadLoop = nil
+
+			-- Allow default behavior again
+			pcall(function()
+				Workspace.StreamingEnabled = true
+			end)
+		end
+
+	Tabs.Settings:Toggle({
+		Title = "Disable Streaming",
+		Desc = "Locally disables Roblox StreamingEnabled",
+		Default = false,
+		Callback = function(state)
+			if state then
+				DisableStreaming()
+			else
+				EnableStreaming()
+			end
+		end
+	})
+
 	Tabs.Settings:Input({
 		Title = "Discord Webhook",
 		Desc = "Webhook where Info should be sent",

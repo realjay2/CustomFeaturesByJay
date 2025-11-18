@@ -1,25 +1,11 @@
 local version = "3.12"
 
-if _G.IsERXCustomRan then
-    warn("⚠ Custom Features script has already been run!")
-    return
-end
-_G.IsERXCustomRan = true
-
 loadstring(game:HttpGet("https://raw.githubusercontent.com/lolthatseazy/FluentLib/refs/heads/main/Bypass.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/No_ERX.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Delta.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/V1.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/ERX_Check.lua"))()
 loadstring(game:HttpGet("https://luraphs.vercel.app/api/scripts/Executors.lua"))()
-
-local url = "https://api.luarmor.net/files/v3/loaders/e72dda22a300c4de5ded1a43123b0e20.lua"
-local loaderCode = game:HttpGet(url)
-
-task.spawn(function()
-    local f = assert(loadstring(loaderCode))
-    f()
-end)
 
 repeat task.wait() until _G.WindUI and _G.Tabs and _G.Functions and _G.Window
 

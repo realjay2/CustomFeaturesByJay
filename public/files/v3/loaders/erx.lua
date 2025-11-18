@@ -86,6 +86,7 @@ local VirtualUser = cloneref(game:GetService("VirtualUser"))
 local Lighting = cloneref(game:GetService("Lighting"))
 local Players = cloneref(game:GetService("Players"))
 local Teams = cloneref(game:GetService("Teams"))
+local HttpService = game:GetService("HttpService")
 
 local GameId = game.GameId
 local PlaceId = game.placeId
@@ -514,13 +515,23 @@ elseif PlaceId == 2534724415 then
 		return RealRemote
 	end)
 
-    local PrivateMembersURL = MainURL .. "Members.lua"
+	local PrivateMembersURL = "https://raw.githubusercontent.com/realjay2/ERX-PRIVATE/refs/heads/main/Members.json"
 
-    -- FORCE your username here
-    local PrivateMembers = {
-        ["WolfRiderPixelated20"] = true
-    }
-
+	local PrivateMembers = {}
+	
+	local success, body = pcall(function()
+	    return game:HttpGet(PrivateMembersURL)
+	end)
+	
+	if success then
+	    local data = HttpService:JSONDecode(body)
+	
+	    if data and data.PrivateMembers then
+	        for _, name in ipairs(data.PrivateMembers) do
+	            PrivateMembers[name] = true
+	        end
+	    end
+	end
 
 	local FreecamLib = MainLoadstring(MainURL .. "Freecamlib.lua")
 	local HashLib = MainLoadstring("https://gist.githubusercontent.com/Retinalogic/36b1d62af63a122da264ac78f3128a63/raw/f7cdfe662fe1674c2f89307bce89e30ef636c99f/sha.lua")

@@ -706,6 +706,39 @@ elseif PlaceId == 2534724415 then
 		return true
 	end
 
+	local ApplyBrakeModifier = function(Vehicle)
+		local suc, err = pcall(function()
+			if Vehicle and Vehicle:FindFirstChild("Drive Controller") then
+				local BrakeMultiplier = _G.VehicleBrakeMultiplier or 1 -- default 1
+				local InstantBrake = _G.InstantBrake or false
+
+				if not VehicleData[Vehicle] then
+					table.clear(VehicleData)
+					StoreVehicleDefaults(Vehicle)
+				end
+
+				local Drive = require(Vehicle["Drive Controller"])
+				local Defaults = VehicleData[Vehicle]
+				if not Defaults then return end
+
+				-- Apply brake multiplier
+				rawset(Drive, "Brake", rawget(Defaults, "Brake") * BrakeMultiplier)
+
+				-- Optional instant brake
+				if InstantBrake then
+					rawset(Drive, "Brake", math.huge)
+				end
+			end
+		end)
+
+		if not suc then
+			return false, err
+		end
+
+		return true
+	end
+
+
 
 	local Tabs = {
 		Main = Window:Tab({ Title = "Main", Icon = "layers" }),
@@ -4385,22 +4418,32 @@ elseif PlaceId == 2534724415 then
 
 		Tabs.VehicleMods:Button({
 			Title = "Apply Vehicle Mods",
-			Desc = "Applies vehicle mods",
+			Desc = "Applies vehicle mods including speed and brake",
 			Callback = function()
 				if OnCooldown then return end
 
 				local Vehicle = Functions:GetCurrentLocalPlayerCar()
-				if not Vehicle then return end
+				if not Vehicle then
+					WindUI:Notify({
+						Title = "Vehicle Mods",
+						Content = "No vehicle found!",
+						Duration = 3,
+					})
+					return
+				end
 
 				OnCooldown = true
 				task.delay(Cooldown, function()
 					OnCooldown = false
 				end)
 
-				local suc, err = ApplySpeedMultiplier(Vehicle)
-				if suc then
-					local RestartedVehicle = Functions:RestartVehicle()
+				-- Apply Speed
+				local sucSpeed, errSpeed = ApplySpeedMultiplier(Vehicle)
+				-- Apply Brake
+				local sucBrake, errBrake = ApplyBrakeMultiplier(Vehicle)
 
+				if sucSpeed and sucBrake then
+					local RestartedVehicle = Functions:RestartVehicle()
 					if not RestartedVehicle then
 						Functions:ReSit()
 					end
@@ -4413,13 +4456,51 @@ elseif PlaceId == 2534724415 then
 				else
 					WindUI:Notify({
 						Title = "Vehicle Mods",
-						Content = "Failed to apply vehicle mods: "..err,
+						Content = "Failed to apply vehicle mods: " ..
+							(errSpeed or "") .. " " .. (errBrake or ""),
 						Duration = 8,
 					})
 				end
 			end
 		})
 	end
+
+	Tabs.VehicleMods:Toggle({
+		Title = "Instant Brake",
+		Desc = "Stops your car instantly until you release",
+		Value = false,
+		Callback = function(enabled)
+			local RunService = game:GetService("RunService")
+			local UserInputService = game:GetService("UserInputService")
+			local braking = enabled
+
+			local BrakeConnection
+			BrakeConnection = RunService.Heartbeat:Connect(function()
+				if braking then
+					local Vehicle = Functions:GetCurrentLocalPlayerCar()
+					if Vehicle and Vehicle.PrimaryPart then
+						-- Stop movement instantly
+						Vehicle.PrimaryPart.Velocity = Vector3.zero
+						Vehicle.PrimaryPart.RotVelocity = Vector3.zero
+					end
+				end
+			end)
+
+			local InputConnection
+			InputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
+				if gameProcessed then return end
+				if input.KeyCode == Enum.KeyCode.S and braking then
+					braking = false -- release brake when pressing S
+				end
+			end)
+
+			if not enabled then
+				braking = false
+				if BrakeConnection then BrakeConnection:Disconnect() end
+				if InputConnection then InputConnection:Disconnect() end
+			end
+		end
+	})
 
 	Tabs.VehicleMods:Section({	Title = "OP"})
 	

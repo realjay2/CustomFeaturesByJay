@@ -30,7 +30,8 @@ end
 _G.CrasherConn = _G.CrasherConn or nil
 
 Tabs.Custom:Section({
-    Title = "Trolling Features"
+    Title = "Crasher",
+	TextSize = 16,
 })
 
 generateCallsign = function()

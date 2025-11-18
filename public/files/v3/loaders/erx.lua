@@ -3997,7 +3997,7 @@ elseif PlaceId == 2534724415 then
 
 	local ViewActionChoice = "None"
 
-	Tabs.Settings:Dropdown({
+	Tabs.Players:Dropdown({
 		Title = "View Action",
 		Desc = "Choose what happens when a staff member views you",
 		Values = {"None", "Respawn", "Fling"},

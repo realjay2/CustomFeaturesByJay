@@ -25,7 +25,7 @@ end
 
 _G.CrasherConn = _G.CrasherConn or nil
 
-Tabs.Trolling:Section({
+Tabs.Custom:Section({
     Title = "Trolling Features"
 })
 
@@ -49,7 +49,7 @@ generateCallsign = function()
 	return prefix .. "-" .. suffix
 end
 
-CrasherExploit = Tabs.Trolling:Toggle({
+CrasherExploit = Tabs.Custom:Toggle({
     Title = "Crash Server [Does not affect you]",
     Desc = "Starts lagging the server.",
     Value = false,

@@ -4504,7 +4504,7 @@ elseif PlaceId == 2534724415 then
 				Title = "Instant Brake Toggled",
 				Content = "Instant Brake has been enablded.",
 				Duration = 10,
-			}) or nil
+			})
 
 			-- Hold references to disconnect safely
 			local BrakeConnection, InputBeganConnection, InputEndedConnection

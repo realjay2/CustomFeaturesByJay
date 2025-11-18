@@ -706,40 +706,6 @@ elseif PlaceId == 2534724415 then
 		return true
 	end
 
-	local ApplyBrakeModifier = function(Vehicle)
-		local suc, err = pcall(function()
-			if Vehicle and Vehicle:FindFirstChild("Drive Controller") then
-				local BrakeMultiplier = _G.VehicleBrakeMultiplier or 1 -- default 1
-				local InstantBrake = _G.InstantBrake or false
-
-				if not VehicleData[Vehicle] then
-					table.clear(VehicleData)
-					StoreVehicleDefaults(Vehicle)
-				end
-
-				local Drive = require(Vehicle["Drive Controller"])
-				local Defaults = VehicleData[Vehicle]
-				if not Defaults then return end
-
-				-- Apply brake multiplier
-				rawset(Drive, "Brake", rawget(Defaults, "Brake") * BrakeMultiplier)
-
-				-- Optional instant brake
-				if InstantBrake then
-					rawset(Drive, "Brake", math.huge)
-				end
-			end
-		end)
-
-		if not suc then
-			return false, err
-		end
-
-		return true
-	end
-
-
-
 	local Tabs = {
 		Main = Window:Tab({ Title = "Main", Icon = "layers" }),
 		LocalPlayer = Window:Tab({ Title = "LocalPlayer", Icon = "user" }),
@@ -4412,6 +4378,20 @@ elseif PlaceId == 2534724415 then
 		end
 	})
 
+	-- Brake Multiplier Slider
+	Tabs.VehicleMods:Slider({
+		Title = "Brake Multiplier",
+		Desc = "Adjust vehicle braking strength",
+		Value = {
+			Min = 0.1,  -- allows very soft braking
+			Max = 10,   -- very strong braking
+			Default = 1,
+		},
+		Callback = function(Value)
+			_G.VehicleBrakeMultiplier = tonumber(Value)
+		end
+	})
+
 	do
 		local Cooldown = 1
 		local OnCooldown = false
@@ -4423,10 +4403,29 @@ elseif PlaceId == 2534724415 then
 				if OnCooldown then return end
 
 				local Vehicle = Functions:GetCurrentLocalPlayerCar()
-				if not Vehicle then
+				if not Vehicle or not Vehicle.PrimaryPart then
 					WindUI:Notify({
 						Title = "Vehicle Mods",
 						Content = "No vehicle found!",
+						Duration = 3,
+					})
+					return
+				end
+
+				-- Check if player is seated
+				local seated = false
+				for _, seat in pairs(Vehicle:GetDescendants()) do
+					if seat:IsA("VehicleSeat") or seat:IsA("Seat") then
+						if seat.Occupant == game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+							seated = true
+							break
+						end
+					end
+				end
+				if not seated then
+					WindUI:Notify({
+						Title = "Vehicle Mods",
+						Content = "You must be seated in the vehicle!",
 						Duration = 3,
 					})
 					return
@@ -4437,11 +4436,55 @@ elseif PlaceId == 2534724415 then
 					OnCooldown = false
 				end)
 
-				-- Apply Speed
-				local sucSpeed, errSpeed = ApplySpeedMultiplier(Vehicle)
-				-- Apply Brake
-				local sucBrake, errBrake = ApplyBrakeMultiplier(Vehicle)
+				-- Apply speed multiplier safely
+				local sucSpeed, errSpeed = pcall(function()
+					if Vehicle:FindFirstChild("Drive Controller") then
+						local Drive = require(Vehicle["Drive Controller"])
+						local Defaults = VehicleData[Vehicle]
+						if not Defaults then
+							table.clear(VehicleData)
+							StoreVehicleDefaults(Vehicle)
+							Defaults = VehicleData[Vehicle]
+						end
 
+						local SpeedMultiplier = _G.VehicleSpeedMultiplier or 1
+						local DefaultHorsepower = rawget(Defaults, "Horsepower") or 2000
+						local NewHorsepower = math.max(DefaultHorsepower * SpeedMultiplier, 2000)
+
+						rawset(Drive, "Horsepower", NewHorsepower)
+						rawset(Drive, "FinalDrive", rawget(Defaults, "FinalDrive") or 1)
+						rawset(Drive, "RevAccel", (rawget(Defaults, "RevAccel") or 1) * SpeedMultiplier)
+						rawset(Drive, "FAntiRoll", (rawget(Defaults, "FAntiRoll") or 1) * SpeedMultiplier)
+						rawset(Drive, "SteerDecay", (rawget(Defaults, "SteerDecay") or 1) * SpeedMultiplier)
+					end
+				end)
+
+				-- Apply brake multiplier safely
+				local sucBrake, errBrake = pcall(function()
+					if Vehicle:FindFirstChild("Drive Controller") then
+						local Drive = require(Vehicle["Drive Controller"])
+						local Defaults = VehicleData[Vehicle]
+						if not Defaults then
+							table.clear(VehicleData)
+							StoreVehicleDefaults(Vehicle)
+							Defaults = VehicleData[Vehicle]
+						end
+
+						local BrakeMultiplier = _G.VehicleBrakeMultiplier or 1
+						local InstantBrake = _G.InstantBrake or false
+						local DefaultBrake = rawget(Defaults, "Brake") or 1000
+
+						-- Normal brake multiplier
+						rawset(Drive, "Brake", DefaultBrake * BrakeMultiplier)
+
+						-- Instant brake override
+						if InstantBrake then
+							rawset(Drive, "Brake", math.huge)
+						end
+					end
+				end)
+
+				-- Restart vehicle and notify
 				if sucSpeed and sucBrake then
 					local RestartedVehicle = Functions:RestartVehicle()
 					if not RestartedVehicle then
@@ -4456,8 +4499,7 @@ elseif PlaceId == 2534724415 then
 				else
 					WindUI:Notify({
 						Title = "Vehicle Mods",
-						Content = "Failed to apply vehicle mods: " ..
-							(errSpeed or "") .. " " .. (errBrake or ""),
+						Content = "Failed to apply vehicle mods: " .. (errSpeed or "") .. " " .. (errBrake or ""),
 						Duration = 8,
 					})
 				end
@@ -4467,37 +4509,52 @@ elseif PlaceId == 2534724415 then
 
 	Tabs.VehicleMods:Toggle({
 		Title = "Instant Brake",
-		Desc = "Stops your car instantly until you release",
+		Desc = "Stops your car instantly while holding S",
 		Value = false,
 		Callback = function(enabled)
 			local RunService = game:GetService("RunService")
 			local UserInputService = game:GetService("UserInputService")
-			local braking = enabled
+			local braking = false
 
 			local BrakeConnection
-			BrakeConnection = RunService.Heartbeat:Connect(function()
-				if braking then
-					local Vehicle = Functions:GetCurrentLocalPlayerCar()
-					if Vehicle and Vehicle.PrimaryPart then
-						-- Stop movement instantly
-						Vehicle.PrimaryPart.Velocity = Vector3.zero
-						Vehicle.PrimaryPart.RotVelocity = Vector3.zero
+			local InputBeganConnection
+			local InputEndedConnection
+
+			if enabled then
+				-- Heartbeat loop for applying brake
+				BrakeConnection = RunService.Heartbeat:Connect(function()
+					if braking then
+						local Vehicle = Functions:GetCurrentLocalPlayerCar()
+						if Vehicle and Vehicle.PrimaryPart then
+							Vehicle.PrimaryPart.AssemblyLinearVelocity = Vector3.zero
+							Vehicle.PrimaryPart.AssemblyAngularVelocity = Vector3.zero
+						end
 					end
-				end
-			end)
+				end)
 
-			local InputConnection
-			InputConnection = UserInputService.InputBegan:Connect(function(input, gameProcessed)
-				if gameProcessed then return end
-				if input.KeyCode == Enum.KeyCode.S and braking then
-					braking = false -- release brake when pressing S
-				end
-			end)
+				-- Detect S key press
+				InputBeganConnection = UserInputService.InputBegan:Connect(function(input, processed)
+					if processed then return end
+					if input.KeyCode == Enum.KeyCode.S then
+						local Vehicle = Functions:GetCurrentLocalPlayerCar()
+						if Vehicle then
+							braking = true
+						end
+					end
+				end)
 
-			if not enabled then
+				-- Detect S key release
+				InputEndedConnection = UserInputService.InputEnded:Connect(function(input)
+					if input.KeyCode == Enum.KeyCode.S then
+						braking = false
+					end
+				end)
+			else
+				-- Disconnect all when toggle is off
 				braking = false
-				if BrakeConnection then BrakeConnection:Disconnect() end
-				if InputConnection then InputConnection:Disconnect() end
+				if BrakeConnection then BrakeConnection:Disconnect() BrakeConnection = nil end
+				if InputBeganConnection then InputBeganConnection:Disconnect() InputBeganConnection = nil end
+				if InputEndedConnection then InputEndedConnection:Disconnect() InputEndedConnection = nil end
 			end
 		end
 	})

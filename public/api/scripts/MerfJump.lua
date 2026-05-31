@@ -214,12 +214,12 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
     end
 end)
 
-Tabs.Custom:Section({
+Tabs.VehicleMods:Section({
     Title = "Merfs Car Jump",
     TextSize = 16,
 })
 
-Tabs.Custom:Toggle({
+Tabs.VehicleMods:Toggle({
     Title = "Car Jump",
     Desc = "Press H to make your car jump",
     Value = false,
@@ -237,7 +237,7 @@ Tabs.Custom:Toggle({
     end,
 })
 
-Tabs.Custom:Toggle({
+Tabs.VehicleMods:Toggle({
     Title = "Backflip Mode",
     Desc = "Enable perfect backflips on jump",
     Value = false,
@@ -259,7 +259,7 @@ Tabs.Custom:Toggle({
     end,
 })
 
-Tabs.Custom:Slider({
+Tabs.VehicleMods:Slider({
     Title = "Jump Power",
     Desc = "Adjust jump height",
     Value = { Min = 50, Max = 200, Default = 100 },

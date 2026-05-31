@@ -1,4 +1,4 @@
-repeat task.wait() until _G.WindUI and _G.Functions
+repeat task.wait() until _G.WindUI and _G.Tabs
 
 local WindUI       = _G.WindUI
 local Window       = _G.Window

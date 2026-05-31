@@ -26,12 +26,12 @@ local function createPlatform(startPos, endPos, thickness)
     return part
 end
 
-Tabs.Custom:Section({
+Tabs.VehicleMods:Section({
     Title = "Frozen Rivers",
     TextSize = 16,
 })
 
-Tabs.Custom:Toggle({
+Tabs.VehicleMods:Toggle({
     Title = "Frozen River",
     Desc = "Drive or Walk on Water.",
     Default = false,

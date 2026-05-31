@@ -13,12 +13,12 @@ local Player = Players.LocalPlayer
 
 getgenv()._CarFlySpeed = 50 
 
-Tabs.Custom:Section({
+Tabs.VehicleMods:Section({
 	Title = "Car Fly",
 	TextSize = 16,
 })
 
-Tabs.Custom:Toggle({
+Tabs.VehicleMods:Toggle({
     Title = "Car Fly",
     Desc = "Fly your vehicle (Keybind: J)",
     Value = false,
@@ -147,7 +147,7 @@ Tabs.Custom:Toggle({
     end,
 })
 
-Tabs.Custom:Slider({
+Tabs.VehicleMods:Slider({
     Title = "Car Fly Speed",
     Desc = "Adjust how fast the vehicle flies",
     Value = {
